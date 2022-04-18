@@ -1,0 +1,6 @@
+.env
+blocklist.json
+Cargo.lock
+#Added by cargo
+/target
+/.idea
