@@ -118,7 +118,7 @@ pub async fn help(ctx: &Context, msg: &Message, args: Args) -> CommandResult {
     msg.channel_id.send_message(&ctx.http, |m| {
         m.embed(|e| {
             e.thumbnail(ICON_HELP);
-            e.description(format!("For help with a specific command, type `{}help <command>`\n\nStruggling? Check out [our wiki](https://github.com/Headline/discord-compiler-bot/wiki)", prefix));
+            e.description(format!("For help with a specific command, type `{}help <command>`\n\nStruggling? Check out [our wiki](https://github.com/ThomasByr/discord-compiler-bot/wiki)", prefix));
             e.color(COLOR_OKAY);
             e.title("Commands");
             e.field("invite", "``` Grabs the bot's invite link ```", false);
