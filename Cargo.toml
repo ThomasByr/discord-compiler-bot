@@ -1,5 +1,6 @@
 [package]
 name = "discord-compiler-bot"
+authors = ["ThomasByr"]
 version = "0.1.0"
 edition = "2021"
 
@@ -33,11 +34,11 @@ chrono = "0.4.19"
 
 
 [dependencies.serenity]
-#version = "0.10"
-git = "https://github.com/serenity-rs/serenity"
-branch = "current"
+version = "0.10"
+# git = "https://github.com/serenity-rs/serenity"
+# branch = "current"
 default-features = false
-features = ["collector", "gateway", "builder", "standard_framework", "http", "model", "client", "framework", "utils", "rustls_backend", "unstable_discord_api"]
+features = ["collector", "gateway", "builder", "standard_framework", "http", "model", "client", "framework", "utils", "rustls_backend"]
 
 [dependencies.wandbox]
 version = "0.1"
@@ -46,3 +47,8 @@ version = "0.1"
 git = "https://github.com/Headline/godbolt-rs"
 branch = "master"
 #path = '../godbolt-rs'
+
+[dependencies.serenity_utils]
+default-features = false
+features = ["rustls_backend"]
+version = "0.6.1"
