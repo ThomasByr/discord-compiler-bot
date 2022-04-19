@@ -74,7 +74,7 @@ Support for following languages : c++, c, java, python, ruby, rust, javascript, 
 - support for 30 more languages
 - asm output
 - embedded messages for discord
-- `;invite` command
+- `;invite`, `;botinfo` commands
 - icons are now found online
 
 </details>
