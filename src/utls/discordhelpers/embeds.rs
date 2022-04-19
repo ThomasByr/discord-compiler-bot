@@ -48,7 +48,7 @@ impl ToEmbed<bool> for wandbox::CompilationResult {
 
         embed.footer(|f| {
             f.text(format!(
-                "{} | Azure",
+                "{} | wandbox.org",
                 author.tag()
             ))
         });
@@ -209,7 +209,7 @@ pub fn build_small_compilation_embed(author: &User, res: & mut CompilationResult
     }
     embed.footer(|f| {
         f.text(format!(
-            "Requested by: {} | Powered by Azure",
+            "Requested by: {} | Powered by wandbox.org",
             author.tag()
         ))
     });
@@ -244,7 +244,7 @@ pub fn build_welcome_embed() -> CreateEmbed {
     embed.field("Example Request", ";compile python\n```py\nprint('hello world')\n```", true);
     embed.field("Learning Time!", "If you like reading the manuals of things, read our [getting started](https://github.com/Headline/discord-compiler-bot/wiki/Getting-Started) wiki or if you are confident type `;help` to view all commands.", false);
     embed.field("Support", "If you ever run into any issues please stop by our [support server](https://discord.com/invite/nNNEZ6s) and we'll give you a hand.", true);
-    embed.footer(|f| f.text("powered by Azure & NVidia // created by Thomas Byr (Headline#9999)"));
+    embed.footer(|f| f.text("powered by Azure & NVidia // created by Michael Flaherty (Headline#9999)"));
     embed
 }
 
@@ -289,7 +289,7 @@ pub fn build_complog_embed(
     guild: &str,
 ) -> CreateEmbed {
     let mut embed = CreateEmbed::default();
-    if !success {
+    if success {
         embed.color(COLOR_FAIL);
     } else {
         embed.color(COLOR_OKAY);
@@ -315,15 +315,5 @@ pub fn build_fail_embed(author: &User, err: &str) -> CreateEmbed {
     embed.description(err);
     embed.thumbnail(ICON_FAIL);
     embed.footer(|f| f.text(format!("Requested by: {}", author.tag())));
-    embed
-}
-
-pub fn build_publish_embed() -> CreateEmbed {
-    let mut embed = CreateEmbed::default();
-    embed
-        .color(COLOR_WARN)
-        .description("This result will not be visible to others until you click the publish button.\n\n \
-                    If you are unhappy with your results please start a new compilation request \
-                    and dismiss this message.");
     embed
 }
