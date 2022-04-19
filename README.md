@@ -1,1 +1,48 @@
-# Discord compiler bot
+# <img src="assets/code.png" alt="icon" width="3%"/> Discord compiler bot
+
+````md
+;compile c++ -O3 -Wall -Wextra -Werror
+argv1 argv2 argv3
+```
+stdin1
+stdin2 not displayed
+```
+```cpp
+#include <iostream>
+#include <string>
+
+int main(int argc, char** argv) {
+    (void)argc;
+    std::string str;
+    std::getline(std::cin, str);
+    std::cout << str << std::endl;
+    std::cout << argv[1] << std::endl;
+    return 0;
+}
+```
+````
+
+1. [In short](#in-short)
+2. [Usage](#usage)
+
+## In short
+
+First, this project was done in a week so do not expect crazy behavior and be immune to bugs.
+
+This is a Discord compiler bot which can compile / interpret code blocks and display the result. Keep in mind that we're working in discord. This means, of course, that we have many operating restraints. Here's a few of the big ones.
+
+- Complicated syntax for non-trivial compilations
+- Limited output length (limited to a couple hundred characters)
+- Single-file input only
+
+Please view [the Wiki](https://github.com/ThomasByr/discord-compiler-bot/wiki) for more.
+
+## Usage
+
+First you should install the [Rust programming language](https://www.rust-lang.org/learn/get-started) for your operating system. Then, you should create a new `.env` file on the model of the `.env.example`. You should at least set `BOT_TOKEN` and `APPLICATION_ID` (you can let other fields untouched) environnement variables.
+
+```ps1
+cargo run --release
+```
+
+The bot should then connect to the servers and if succesfull, show a list of debug commands on the go.
