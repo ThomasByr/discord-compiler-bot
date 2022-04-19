@@ -2,11 +2,12 @@ use serenity::framework::standard::{macros::command, Args, CommandError, Command
 use serenity::model::prelude::*;
 use serenity::prelude::*;
 
+use serenity_utils::menu::*;
+
 use crate::cache::{ConfigCache, CompilerCache};
 use crate::utls::discordhelpers;
 use crate::utls::parser::shortname_to_qualified;
 use crate::managers::compilation::RequestHandler;
-use crate::utls::discordhelpers::menu::Menu;
 
 #[command]
 pub async fn compilers(ctx: &Context, msg: &Message, _args: Args) -> CommandResult {
@@ -27,8 +28,7 @@ pub async fn compilers(ctx: &Context, msg: &Message, _args: Args) -> CommandResu
     // Get our list of compilers
     let mut langs: Vec<String> = Vec::new();
 
-    let lower_lang = user_lang.to_lowercase();
-    let language = shortname_to_qualified(&lower_lang);
+    let language = shortname_to_qualified(&user_lang);
     match compiler_manager.resolve_target(language) {
         RequestHandler::CompilerExplorer => {
             for cache_entry in &compiler_manager.gbolt.cache {
@@ -61,16 +61,21 @@ pub async fn compilers(ctx: &Context, msg: &Message, _args: Args) -> CommandResu
     }
 
 
-    let avatar = {
-        let data_read = ctx.data.read().await;
-        let botinfo_lock = data_read
-            .get::<ConfigCache>()
-            .expect("Expected BotInfo in global cache")
-            .clone();
+    let avatar = msg.author.avatar_url().unwrap_or(msg.author.default_avatar_url());    
+    let reaction = {
+        let botinfo_lock = data_read.get::<ConfigCache>().unwrap();
         let botinfo = botinfo_lock.read().await;
-        botinfo.get("BOT_AVATAR").unwrap().clone()
+        if let Some(success_id) = botinfo.get("LOADING_EMOJI_ID") {
+            let success_name = botinfo.get("LOADING_EMOJI_NAME").expect("Unable to find loading emoji name").clone();
+            discordhelpers::build_reaction(success_id.parse::<u64>()?, &success_name)
+        }
+        else {
+            ReactionType::Unicode(String::from("⏳"))
+        }
     };
 
+    // build menu
+    let options = discordhelpers::build_menu_controls();
     let pages = discordhelpers::build_menu_items(
         langs,
         15,
@@ -79,8 +84,30 @@ pub async fn compilers(ctx: &Context, msg: &Message, _args: Args) -> CommandResu
         &msg.author.tag(),
         ""
     );
-    let mut menu = Menu::new(ctx, msg, &pages);
-    menu.run().await?;
+    let menu = Menu::new(ctx, msg, &pages, options);
+    match menu.run().await {
+        Ok(m) => m,
+        Err(e) => {
+            // When they click the "X", we get Unknown Message for some reason from serenity_utils
+            // We'll manually check for that - and then let us return out
+            if e.to_string() == "Unknown Message" {
+                match msg
+                .react(&ctx.http, reaction)
+                .await
+            {
+                Ok(r) => r,
+                Err(e) => {
+                    return Err(CommandError::from(format!(" Unable to react to message, am I missing permissions to react or use external emoji?\n{}", e)));
+                }
+            };
+            }
+
+            return Err(CommandError::from(format!(
+                "Failed to build languages menu\n{}",
+                e
+            )));
+        }
+    };
 
     debug!("Command executed");
     Ok(())

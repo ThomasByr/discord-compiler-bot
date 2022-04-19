@@ -1,10 +1,11 @@
-use serenity::framework::standard::{macros::command, Args, CommandResult};
+use serenity::framework::standard::{macros::command, Args, CommandError, CommandResult};
 use serenity::model::prelude::*;
 use serenity::prelude::*;
 
+use serenity_utils::menu::*;
+
 use crate::cache::{ConfigCache, CompilerCache};
 use crate::utls::discordhelpers;
-use crate::utls::discordhelpers::menu::Menu;
 
 #[command]
 pub async fn languages(ctx: &Context, msg: &Message, _args: Args) -> CommandResult {
@@ -24,19 +25,30 @@ pub async fn languages(ctx: &Context, msg: &Message, _args: Args) -> CommandResu
         }
     }
 
-    let avatar = {
+    let avatar;
+    let success_id;
+    let success_name;
+    {
         let data_read = ctx.data.read().await;
         let botinfo_lock = data_read
             .get::<ConfigCache>()
             .expect("Expected BotInfo in global cache")
             .clone();
         let botinfo = botinfo_lock.read().await;
-        botinfo.get("BOT_AVATAR").unwrap().clone()
-    };
+        avatar = botinfo.get("BOT_AVATAR").unwrap().clone();
+        success_id = botinfo
+            .get("SUCCESS_EMOJI_ID")
+            .unwrap_or(&"".to_string())
+            .clone()
+            .parse::<u64>()
+            .unwrap_or(0);
+        success_name = botinfo.get("SUCCESS_EMOJI_NAME").unwrap_or(&String::from("✅")).clone();
+    }
 
     let mut items_vec : Vec<String> = items.into_iter().collect();
     items_vec.sort();
 
+    let options = discordhelpers::build_menu_controls();
     let pages = discordhelpers::build_menu_items(
         items_vec,
         15,
@@ -45,8 +57,34 @@ pub async fn languages(ctx: &Context, msg: &Message, _args: Args) -> CommandResu
         &msg.author.tag(),
         "*\\* = supports assembly output*"
     );
-    let mut menu = Menu::new(ctx, msg, &pages);
-    menu.run().await?;
+    let menu = Menu::new(ctx, msg, &pages, options);
+    match menu.run().await {
+        Ok(m) => m,
+        Err(e) => {
+            if e.to_string() == "Unknown Message" {
+                match msg
+                    .react(
+                        &ctx.http,
+                        discordhelpers::build_reaction(success_id, &success_name),
+                    )
+                    .await
+                {
+                    Ok(r) => r,
+                    Err(_e) => {
+                        // No need to fail here - this case is handled above
+                        return Ok(());
+                    }
+                };
+
+                return Ok(());
+            }
+
+            return Err(CommandError::from(format!(
+                "Failed to build languages menu\n{}",
+                e
+            )));
+        }
+    };
 
     debug!("Command executed");
     Ok(())
