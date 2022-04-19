@@ -87,4 +87,5 @@ Support for following languages : c++, c, java, python, ruby, rust, javascript, 
 
 **Bugs** (latest fix)
 
-- `;botinfo` command not working
+- ~~`;botinfo` command not working~~ (v0.1.0)
+- total number of servers joined always showing 0
