@@ -9,7 +9,6 @@ mod utls;
 mod cppeval;
 mod managers;
 mod tests;
-mod slashcmds;
 
 use serenity::{
     client::bridge::gateway::GatewayIntents,
@@ -39,14 +38,10 @@ struct General;
 /** Spawn bot **/
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn Error>> {
-    if let Err(e) = dotenv::dotenv() {
-        error!("Unable to find .env configuration file: {}", e);
-    }
-
+    dotenv::dotenv().ok();
     pretty_env_logger::init();
 
-    let token = env::var("BOT_TOKEN")
-        .expect("Expected bot token in .env file");
+    let token = env::var("BOT_TOKEN")?;
     let http = Http::new_with_token(&token);
     let (owners, bot_id) = match http.get_current_application_info().await {
         Ok(info) => {
@@ -65,10 +60,8 @@ async fn main() -> Result<(), Box<dyn Error>> {
         Err(why) => {
             warn!("Could not access application info: {:?}", why);
             warn!("Trying environment variable for bot id...");
-            let id = env::var("BOT_ID")
-                .expect("Unable to find BOT_ID environment variable");
-            let bot_id = id.parse::<u64>()
-                .expect("Invalid bot id");
+            let id = env::var("BOT_ID").expect("Unable to find BOT_ID environment variable");
+            let bot_id = id.parse::<u64>().expect("Invalid bot id");
             (HashSet::new(), serenity::model::id::UserId(bot_id))
         },
     };
@@ -82,10 +75,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
             .join(", ")
     );
 
-    let prefix = env::var("BOT_PREFIX")
-        .expect("Expected bot prefix in .env file");
-    let app_id = env::var("APPLICATION_ID")
-        .expect("Expected application id in .env file");
+    let prefix = env::var("BOT_PREFIX")?;
     let framework = StandardFramework::new()
         .configure(|c| c.owners(owners).prefix(&prefix))
         .before(events::before)
@@ -98,7 +88,6 @@ async fn main() -> Result<(), Box<dyn Error>> {
         .framework(framework)
         .event_handler(events::Handler)
         .intents(GatewayIntents::GUILDS | GatewayIntents::GUILD_MESSAGES | GatewayIntents::GUILD_MESSAGE_REACTIONS)
-        .application_id(app_id.parse::<u64>().unwrap())
         .await?;
 
     cache::fill(client.data.clone(), &prefix, &bot_id, client.shard_manager.clone()).await?;
