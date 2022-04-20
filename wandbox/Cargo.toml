@@ -1,0 +1,24 @@
+[dependencies.reqwest]
+features = ["json"]
+version = "0.11"
+
+[dependencies.serde]
+features = ["derive"]
+version = "1.0.*"
+
+[dependencies.serde_json]
+version = "1.0"
+
+[dependencies.tokio]
+features = ["macros"]
+version = "1.0"
+
+[package]
+authors = ["ThomasByr"]
+categories = ["api-bindings", "web-programming::http-client"]
+description = "An api binding for Wandbox"
+edition = "2021"
+keywords = ["Wandbox"]
+name = "wandbox"
+readme = "README.md"
+version = "0.1.3"
