@@ -1,4 +1,3 @@
-#[cfg(test)]
-
-pub mod parser;
 pub mod cpp;
+#[cfg(test)]
+pub mod parser;
