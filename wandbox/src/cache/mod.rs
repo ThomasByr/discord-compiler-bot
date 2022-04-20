@@ -1,9 +1,8 @@
-
 use std::error::Error;
 
 use std::collections::HashMap;
 
-use crate::{Language, Compiler};
+use crate::{Compiler, Language};
 
 pub type CompilerCache = HashMap<String, Language>;
 
@@ -11,11 +10,11 @@ pub async fn load() -> Result<CompilerCache, Box<dyn Error>> {
     // grab wandbox compilers
     let res = reqwest::get("https://wandbox.org/api/list.json").await?;
     // retrieve compilers as vector
-    let result : Vec<Compiler> = res.json().await?;
+    let result: Vec<Compiler> = res.json().await?;
 
     // we have to build our cache, iterating our vector and organizing
     // compilers by their language. The language id should be lowercase.
-    let mut comp_cache : CompilerCache = HashMap::new();
+    let mut comp_cache: CompilerCache = HashMap::new();
     for c in result {
         let language_name = c.language.to_ascii_lowercase();
 
@@ -29,8 +28,8 @@ pub async fn load() -> Result<CompilerCache, Box<dyn Error>> {
             // create one then..
             None => {
                 let mut lang = Language {
-                    name : language_name.clone(),
-                    compilers : Vec::new()
+                    name: language_name.clone(),
+                    compilers: Vec::new(),
                 };
                 lang.compilers.push(c);
                 comp_cache.insert(language_name, lang);
