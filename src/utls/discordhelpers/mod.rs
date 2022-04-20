@@ -1,21 +1,21 @@
 pub mod embeds;
+pub mod interactions;
+pub mod menu;
 
 use std::str;
 use std::sync::Arc;
 
 use serenity::{
-    builder::{CreateEmbed, CreateMessage},
+    builder::{CreateEmbed},
     http::Http,
     model::prelude::*,
 };
 
-use serenity_utils::menu::*;
-
 use crate::utls::constants::*;
-use crate::utls::{discordhelpers};
-use tokio::sync::{MutexGuard};
-use serenity::client::bridge::gateway::{ShardManager};
-use crate::cache::{ConfigCache};
+use crate::utls::discordhelpers;
+use tokio::sync::MutexGuard;
+use serenity::client::bridge::gateway::ShardManager;
+use crate::cache::ConfigCache;
 use serenity::client::Context;
 use serenity::framework::standard::CommandResult;
 
@@ -26,8 +26,8 @@ pub fn build_menu_items(
     avatar: &str,
     author: &str,
     desc: &str
-) -> Vec<CreateMessage<'static>> {
-    let mut pages: Vec<CreateMessage> = Vec::new();
+) -> Vec<CreateEmbed> {
+    let mut pages = Vec::new();
     let num_pages = items.len() / items_per_page;
 
     let mut current_page = 0;
@@ -37,62 +37,36 @@ pub fn build_menu_items(
         if end > items.len() {
             end = items.len();
         }
-        let mut page = CreateMessage::default();
-        page.embed(|e| {
-            let mut description = format!("{}\n", desc);
-            for (i, item) in items[current_page * items_per_page..end].iter().enumerate() {
-                if i > items_per_page {
-                    break;
-                }
-                description.push_str(&format!(
-                    "**{}**) {}\n",
-                    current_page * items_per_page + i + 1,
-                    item
-                ))
+        let mut emb = CreateEmbed::default();
+        let mut description = format!("{}\n", desc);
+        for (i, item) in items[current_page * items_per_page..end].iter().enumerate() {
+            if i > items_per_page {
+                break;
             }
-            e.color(COLOR_OKAY);
-            e.title(title);
-            e.description(description);
-            e.footer(|f| {
-                f.text(&format!(
-                    "Requested by {} | Page {}/{}",
-                    author,
-                    current_page + 1,
-                    num_pages + 1
-                ))
-            });
-            e.thumbnail(avatar);
-            e
+            description.push_str(&format!(
+                "**{}**) {}\n",
+                current_page * items_per_page + i + 1,
+                item
+            ))
+        }
+        emb.color(COLOR_OKAY);
+        emb.title(title);
+        emb.description(description);
+        emb.footer(|f| {
+            f.text(&format!(
+                "Requested by {} | Page {}/{}",
+                author,
+                current_page + 1,
+                num_pages + 1
+            ))
         });
+        emb.thumbnail(avatar);
 
-        pages.push(page);
+        pages.push(emb);
         current_page += 1;
     }
 
     pages
-}
-
-pub fn build_menu_controls() -> MenuOptions {
-    let controls = vec![
-        Control::new(
-            ReactionType::from('◀'),
-            Arc::new(|m, r| Box::pin(prev_page(m, r))),
-        ),
-        Control::new(
-            ReactionType::from('🛑'),
-            Arc::new(|m, r| Box::pin(close_menu(m, r))),
-        ),
-        Control::new(
-            ReactionType::from('▶'),
-            Arc::new(|m, r| Box::pin(next_page(m, r))),
-        ),
-    ];
-
-    // Let's create options for the menu.
-    MenuOptions {
-        controls,
-        ..Default::default()
-    }
 }
 
 // Pandas#3**2 on serenity disc, tyty
@@ -104,7 +78,7 @@ pub fn build_reaction(emoji_id: u64, emoji_name: &str) -> ReactionType {
     }
 }
 
-pub async fn handle_edit(ctx : &Context, content : String, author : User, mut old : Message) {
+pub async fn handle_edit(ctx : &Context, content : String, author : User, mut old : Message, original_message: Message) {
     let prefix = {
         let data = ctx.data.read().await;
         let info = data.get::<ConfigCache>().unwrap().read().await;
@@ -115,19 +89,19 @@ pub async fn handle_edit(ctx : &Context, content : String, author : User, mut ol
     let _ = old.delete_reactions(&ctx).await;
 
     if content.starts_with(&format!("{}asm", prefix)) {
-        if let Err(e) = handle_edit_asm(&ctx, content, author.clone(), old.clone()).await {
+        if let Err(e) = handle_edit_asm(&ctx, content, author.clone(), old.clone(), original_message.clone()).await {
             let err = embeds::build_fail_embed(&author, &e.to_string());
             embeds::edit_message_embed(&ctx, & mut old, err).await;
         }
     }
     else if content.starts_with(&format!("{}compile", prefix)) {
-        if let Err(e) = handle_edit_compile(&ctx, content, author.clone(), old.clone()).await {
+        if let Err(e) = handle_edit_compile(&ctx, content, author.clone(), old.clone(), original_message.clone()).await {
             let err = embeds::build_fail_embed(&author, &e.to_string());
             embeds::edit_message_embed(&ctx, & mut old, err).await;
         }
     }
     else if content.starts_with(&format!("{}cpp", prefix)) {
-        if let Err(e) = handle_edit_cpp(&ctx, content, author.clone(), old.clone()).await {
+        if let Err(e) = handle_edit_cpp(&ctx, content, author.clone(), old.clone(), original_message.clone()).await {
             let err = embeds::build_fail_embed(&author, &e.to_string());
             embeds::edit_message_embed(&ctx, & mut old, err).await;
         }
@@ -138,8 +112,8 @@ pub async fn handle_edit(ctx : &Context, content : String, author : User, mut ol
     }
 }
 
-pub async fn handle_edit_cpp(ctx : &Context, content : String, author : User, mut old : Message) -> CommandResult {
-    let embed = crate::commands::cpp::handle_request(ctx.clone(), content, author, &old).await?;
+pub async fn handle_edit_cpp(ctx : &Context, content : String, author : User, mut old : Message, original_msg: Message) -> CommandResult {
+    let embed = crate::commands::cpp::handle_request(ctx.clone(), content, author, &original_msg).await?;
 
     let compilation_successful = embed.0.get("color").unwrap() == COLOR_OKAY;
     discordhelpers::send_completion_react(ctx, &old, compilation_successful).await?;
@@ -148,8 +122,8 @@ pub async fn handle_edit_cpp(ctx : &Context, content : String, author : User, mu
     Ok(())
 }
 
-pub async fn handle_edit_compile(ctx : &Context, content : String, author : User, mut old : Message) -> CommandResult {
-    let embed = crate::commands::compile::handle_request(ctx.clone(), content, author, &old).await?;
+pub async fn handle_edit_compile(ctx : &Context, content : String, author : User, mut old : Message, original_msg: Message) -> CommandResult {
+    let embed = crate::commands::compile::handle_request(ctx.clone(), content, author, &original_msg).await?;
 
     let compilation_successful = embed.0.get("color").unwrap() == COLOR_OKAY;
     discordhelpers::send_completion_react(ctx, &old, compilation_successful).await?;
@@ -158,8 +132,8 @@ pub async fn handle_edit_compile(ctx : &Context, content : String, author : User
     Ok(())
 }
 
-pub async fn handle_edit_asm(ctx : &Context, content : String, author : User, mut old : Message) -> CommandResult {
-    let emb = crate::commands::asm::handle_request(ctx.clone(), content, author, &old).await?;
+pub async fn handle_edit_asm(ctx : &Context, content : String, author : User, mut old : Message, original_msg: Message) -> CommandResult {
+    let emb = crate::commands::asm::handle_request(ctx.clone(), content, author, &original_msg).await?;
 
     let success = emb.0.get("color").unwrap() == COLOR_OKAY;
     embeds::edit_message_embed(&ctx, & mut old, emb).await;
@@ -181,7 +155,7 @@ pub async fn send_completion_react(ctx: &Context, msg: &Message, success: bool) 
             let botinfo = botinfo_lock.read().await;
             if let Some(success_id) = botinfo.get("SUCCESS_EMOJI_ID") {
                 let success_name = botinfo.get("SUCCESS_EMOJI_NAME").expect("Unable to find success emoji name").clone();
-                reaction = discordhelpers::build_reaction(success_id.parse::<u64>()?, &success_name);
+                reaction = discordhelpers::build_reaction(success_id.parse::<u64>().unwrap(), &success_name);
             }
             else {
                 reaction = ReactionType::Unicode(String::from("✅"));
@@ -237,10 +211,23 @@ pub async fn manual_dispatch(http: Arc<Http>, id: u64, emb: CreateEmbed) {
 
 pub async fn send_global_presence(shard_manager : &MutexGuard<'_, ShardManager>, sum : u64) {
     // update shard guild count & presence
-    let presence_str = format!("in {} servers | ;help", sum);
+    let presence_str = format!("in {} servers | ;invite", sum);
 
     let runners = shard_manager.runners.lock().await;
     for (_, v) in runners.iter() {
         v.runner_tx.set_presence(Some(Activity::playing(&presence_str)), OnlineStatus::Online);
     }
+}
+
+pub async fn delete_bot_reacts(ctx : &Context, msg : &Message, react : ReactionType) -> CommandResult {
+    let bot_id = {
+        let data_read = ctx.data.read().await;
+        let botinfo_lock = data_read.get::<ConfigCache>().unwrap();
+        let botinfo = botinfo_lock.read().await;
+        let id = botinfo.get("BOT_ID").unwrap();
+        UserId::from(id.parse::<u64>().unwrap())
+    };
+
+    msg.channel_id.delete_reaction(&ctx.http, msg.id, Some(bot_id), react).await?;
+    Ok(())
 }

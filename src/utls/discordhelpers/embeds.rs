@@ -48,7 +48,7 @@ impl ToEmbed<bool> for wandbox::CompilationResult {
 
         embed.footer(|f| {
             f.text(format!(
-                "{} | wandbox.org",
+                "{} | NVidia",
                 author.tag()
             ))
         });
@@ -209,7 +209,7 @@ pub fn build_small_compilation_embed(author: &User, res: & mut CompilationResult
     }
     embed.footer(|f| {
         f.text(format!(
-            "Requested by: {} | Powered by wandbox.org",
+            "Requested by: {} | Powered by NVidia",
             author.tag()
         ))
     });
@@ -289,7 +289,7 @@ pub fn build_complog_embed(
     guild: &str,
 ) -> CreateEmbed {
     let mut embed = CreateEmbed::default();
-    if success {
+    if !success {
         embed.color(COLOR_FAIL);
     } else {
         embed.color(COLOR_OKAY);
@@ -315,5 +315,15 @@ pub fn build_fail_embed(author: &User, err: &str) -> CreateEmbed {
     embed.description(err);
     embed.thumbnail(ICON_FAIL);
     embed.footer(|f| f.text(format!("Requested by: {}", author.tag())));
+    embed
+}
+
+pub fn build_publish_embed() -> CreateEmbed {
+    let mut embed = CreateEmbed::default();
+    embed
+        .color(COLOR_WARN)
+        .description("This result will not be visible to others until you click the publish button.\n\n \
+                    If you are unhappy with your results please start a new compilation request \
+                    and dismiss this message.");
     embed
 }
