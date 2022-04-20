@@ -11,7 +11,7 @@ use std::io::Write;
 #[command]
 pub async fn format(ctx: &Context, msg: &Message, mut args: Args) -> CommandResult {
     let mut fmt = String::from("clangformat");
-    let mut style = String::from("webkit");
+    let mut style = String::from("google");
     if !args.is_empty() {
         // do not include ``` codeblocks into arg parsing.. lets just substr and replace args
         let idx = msg.content.find("`");
