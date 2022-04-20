@@ -1,11 +1,10 @@
 use serenity::framework::standard::{macros::command, Args, CommandResult};
 
-use crate::cache::{MessageCache};
+use crate::cache::{MessageCache, MessageCacheEntry};
 use crate::utls::{parser, discordhelpers};
 use crate::utls::constants::COLOR_OKAY;
 use crate::utls::discordhelpers::{embeds, is_success_embed};
 
-use std::env;
 use tokio::sync::RwLockReadGuard;
 
 use serenity::framework::standard::CommandError;
@@ -33,18 +32,18 @@ pub async fn compile(ctx: &Context, msg: &Message, _args: Args) -> CommandResult
         .await?;
 
     // Success/fail react
-    let compilation_successful = compilation_embed.embeds[0].colour.0 == COLOR_OKAY;
+    let compilation_successful = compilation_embed.embeds[0].colour.unwrap().0 == COLOR_OKAY;
     discordhelpers::send_completion_react(ctx, &compilation_embed, compilation_successful).await?;
 
     let mut delete_cache = data_read.get::<MessageCache>().unwrap().lock().await;
-    delete_cache.insert(msg.id.0, compilation_embed);
+    delete_cache.insert(msg.id.0, MessageCacheEntry::new(compilation_embed, msg.clone()));
     debug!("Command executed");
     Ok(())
 }
 
 pub async fn handle_request(ctx : Context, mut content : String, author : User, msg : &Message) -> Result<CreateEmbed, CommandError> {
     let data_read = ctx.data.read().await;
-    let reaction = {
+    let loading_reaction = {
         let botinfo_lock = data_read.get::<ConfigCache>().unwrap();
         let botinfo = botinfo_lock.read().await;
         if let Some(loading_id) = botinfo.get("LOADING_EMOJI_ID") {
@@ -67,15 +66,9 @@ pub async fn handle_request(ctx : Context, mut content : String, author : User, 
     let parse_result = parser::get_components(&content, &author, Some(&compilation_manager), &msg.referenced_message).await?;
 
     // send out loading emote
-    let reaction = match msg
-        .react(&ctx.http, reaction)
-        .await
-    {
-        Ok(r) => r,
-        Err(e) => {
-            return Err(CommandError::from(format!(" Unable to react to message, am I missing permissions to react or use external emoji?\n{}", e)));
-        }
-    };
+    if let Err(_) = msg.react(&ctx.http, loading_reaction.clone()).await {
+        return Err(CommandError::from("Unable to react to message, am I missing permissions to react or use external emoji?\n{}"));
+    }
 
     // dispatch our req
     let compilation_manager_lock : RwLockReadGuard<CompilationManager> = compilation_manager.read().await;
@@ -84,38 +77,34 @@ pub async fn handle_request(ctx : Context, mut content : String, author : User, 
         Ok(r) => r,
         Err(e) => {
             // we failed, lets remove the loading react so it doesn't seem like we're still processing
-            msg.delete_reaction_emoji(&ctx.http, reaction.emoji.clone()).await?;
+            discordhelpers::delete_bot_reacts(&ctx, msg, loading_reaction.clone()).await?;
 
             return Err(CommandError::from(format!("{}", e)));
         }
     };
-
+    
     // remove our loading emote
-    if msg.delete_reaction_emoji(&ctx.http, reaction.emoji.clone()).await
-        .is_err()
-    {
-        return Err(CommandError::from(
-            "Unable to remove reactions!\nAm I missing permission to manage messages?",
-        ));
-    }
+    let _ = discordhelpers::delete_bot_reacts(&ctx, &msg, loading_reaction).await;
 
+    let is_success = is_success_embed(&result.1);
     let stats = data_read.get::<StatsManagerCache>().unwrap().lock().await;
     if stats.should_track() {
-        stats.compilation(&result.0, !is_success_embed(&result.1)).await;
+        stats.compilation(&result.0, !is_success).await;
     }
 
-    let mut guild = String::from("<unknown>");
-    if let Some(g) = msg.guild_id {
-        guild = g.to_string()
-    }
-    if let Ok(log) = env::var("COMPILE_LOG") {
+    let data = ctx.data.read().await;
+    let config = data.get::<ConfigCache>().unwrap();
+    let config_lock = config.read().await;
+
+    if let Some(log) = config_lock.get("COMPILE_LOG") {
         if let Ok(id) = log.parse::<u64>() {
+            let guild = if msg.guild_id.is_some() {msg.guild_id.unwrap().0.to_string()} else {"<<unknown>>".to_owned()};
             let emb = embeds::build_complog_embed(
-                is_success_embed(&result.1),
+                is_success,
                 &parse_result.code,
                 &parse_result.target,
-                &author.tag(),
-                author.id.0,
+                &msg.author.tag(),
+                msg.author.id.0,
                 &guild,
             );
             discordhelpers::manual_dispatch(ctx.http.clone(), id, emb).await;
