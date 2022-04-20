@@ -109,7 +109,7 @@ pub async fn help(ctx: &Context, msg: &Message, args: Args) -> CommandResult {
                 emb.field("Example", format!("{}format clang Google", prefix), false);
                 emb.field("Example", format!("{}format clang Mozilla", prefix), false);
                 emb.field("Example", format!("{}format rustfmt", prefix), false);
-                "Formats the input code with the formatter specified. Defaults to clang-format WebKit\n\n*(see .formats command for all formats)*\n\n"
+                "Formats the input code with the formatter specified. Defaults to clang-format Google\n\n*(see .formats command for all formats)*\n\n"
             }
             _ => {
                 emb.title("Command not found");
