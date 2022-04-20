@@ -69,13 +69,15 @@ Support for following languages : c++, c, java, python, ruby, rust, javascript, 
 
 ## Changelog, Bugs and TODO
 
-<details><summary>**v0.1.0** first release</summary>
+<details><summary>**v0.1.1** first release (fix)</summary>
 
 - support for 30 more languages
 - asm output
 - embedded messages for discord
 - `;invite`, `;botinfo` commands
 - icons are now found online
+- locked serenity dependency version to v0.11.1
+- client now has privileged access to context
 
 </details>
 
@@ -88,5 +90,5 @@ Support for following languages : c++, c, java, python, ruby, rust, javascript, 
 **Bugs** (latest fix)
 
 - ~~`;botinfo` command not working~~ (v0.1.0)
-- total number of servers joined always showing 0
-- debug commands not showing up in console (might be linked to previous bug)
+- ~~total number of servers joined always showing 0~~ (v0.1.1)
+- ~~debug commands not showing up in console (might be linked to previous bug)~~ (v0.1.1)
