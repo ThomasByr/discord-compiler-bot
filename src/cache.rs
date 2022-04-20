@@ -7,7 +7,6 @@ use tokio::sync::RwLock;
 use tokio::sync::Mutex;
 
 use serenity::prelude::{TypeMap, TypeMapKey};
-use serenity::model::id::UserId;
 use serenity::client::bridge::gateway::ShardManager;
 
 use crate::managers::stats::StatsManager;
@@ -15,6 +14,7 @@ use crate::utls::blocklist::Blocklist;
 
 use lru_cache::LruCache;
 use serenity::model::channel::Message;
+use crate::managers::command::CommandManager;
 use crate::managers::compilation::CompilationManager;
 
 /** Caching **/
@@ -55,16 +55,36 @@ impl TypeMapKey for ShardManagerCache {
     type Value = Arc<Mutex<ShardManager>>;
 }
 
+pub struct MessageCacheEntry {
+    pub our_msg : Message,
+    pub original_msg : Message
+}
+impl MessageCacheEntry {
+    pub fn new(our_msg : Message, original_msg : Message) -> Self {
+        MessageCacheEntry {
+            our_msg,
+            original_msg
+        }
+    }
+}
+
+
 /// Message  cache to interact with our own messages after they are dispatched
 pub struct MessageCache;
 impl TypeMapKey for MessageCache {
-    type Value = Arc<Mutex<LruCache<u64, Message>>>;
+    type Value = Arc<Mutex<LruCache<u64, MessageCacheEntry>>>;
+}
+
+/// Holds the Command Manager which handles command registration logic
+pub struct CommandCache;
+impl TypeMapKey for CommandCache {
+    type Value = Arc<RwLock<CommandManager>>;
 }
 
 pub async fn fill(
     data: Arc<RwLock<TypeMap>>,
     prefix: &str,
-    id: &UserId,
+    id: u64,
     shard_manager: Arc<tokio::sync::Mutex<ShardManager>>
 ) -> Result<(), Box<dyn Error>> {
     let mut data = data.write().await;
@@ -74,7 +94,7 @@ pub async fn fill(
 
     // optional additions
     let emoji_identifiers = ["SUCCESS_EMOJI_ID", "SUCCESS_EMOJI_NAME", "LOADING_EMOJI_ID", "LOADING_EMOJI_NAME", "LOGO_EMOJI_NAME", "LOGO_EMOJI_ID"];
-    for id in emoji_identifiers{
+    for id in &emoji_identifiers{
         if let Ok(envvar) = env::var(id) {
             if !envvar.is_empty() {
                 map.insert(id, envvar);
@@ -84,7 +104,18 @@ pub async fn fill(
 
     map.insert("GIT_HASH_LONG", String::from(env!("GIT_HASH_LONG")));
     map.insert("GIT_HASH_SHORT", String::from(env!("GIT_HASH_SHORT")));
-    map.insert("JOIN_LOG", env::var("JOIN_LOG")?);
+
+    if let Ok(jlog) = env::var("JOIN_LOG") {
+        map.insert("JOIN_LOG", jlog);
+    }
+    if let Ok(clog) = env::var("COMPILE_LOG") {
+        map.insert("COMPILE_LOG", clog);
+    }
+
+    map.insert("INVITE_LINK", env::var("INVITE_LINK")?);
+    map.insert("DISCORDBOTS_LINK", env::var("DISCORDBOTS_LINK")?);
+    map.insert("GITHUB_LINK", env::var("GITHUB_LINK")?);
+    map.insert("STATS_LINK", env::var("STATS_LINK")?);
     map.insert("BOT_PREFIX", String::from(prefix));
     map.insert("BOT_ID", id.to_string());
     data.insert::<ConfigCache>(Arc::new(RwLock::new(map)));
@@ -100,9 +131,10 @@ pub async fn fill(
     info!("Compilation manager loaded");
 
     // DBL
-    let token = env::var("DBL_TOKEN")?;
-    let client = dbl::Client::new(token)?;
-    data.insert::<DblCache>(Arc::new(RwLock::new(client)));
+    if let Ok(token) = env::var("DBL_TOKEN") {
+        let client = dbl::Client::new(token)?;
+        data.insert::<DblCache>(Arc::new(RwLock::new(client)));
+    }
 
     // Stats tracking
     let stats = StatsManager::new();
@@ -114,6 +146,9 @@ pub async fn fill(
     // Blocklist
     let blocklist = Blocklist::new();
     data.insert::<BlocklistCache>(Arc::new(RwLock::new(blocklist)));
+
+    let commands = CommandManager::new();
+    data.insert::<CommandCache>(Arc::new(RwLock::new(commands)));
 
     Ok(())
 }
