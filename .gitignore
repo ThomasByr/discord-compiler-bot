@@ -2,6 +2,6 @@
 *.exe
 blocklist.json
 Cargo.lock
-#Added by cargo
+# Added by cargo
 /target
 /.idea
