@@ -334,8 +334,8 @@ impl CompilationBuilder {
         let status_code = response.status().clone();
         let res : CompilationResult = match response.json().await {
             Ok(res) => res,
-            Err(_e) => return Err(WandboxError::new(&format!("Wandbox replied with: {}\n\
-            This could mean WandBox is experiencing an outage, or a network connection error has occured", status_code)))
+            Err(_e) => return Err(WandboxError::new(&format!("NVidia replied with: {}\n\
+            This could mean NVidia is experiencing an outage, or a network connection error has occurred", status_code)))
         };
         return Ok(res);
     }
