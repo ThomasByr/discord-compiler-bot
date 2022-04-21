@@ -50,7 +50,7 @@ This is a Discord compiler bot which can compile / interpret code blocks and dis
 - Limited output length (limited to a couple hundred characters)
 - Single-file input only
 
-Please view [the Wiki](https://github.com/ThomasByr/discord-compiler-bot/wiki) for more.
+Please read [the Wiki](https://github.com/ThomasByr/discord-compiler-bot/wiki) for more.
 
 ## Usage
 
@@ -100,8 +100,9 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 - embedded messages for discord
 - `;invite`, `;botinfo` commands
 - icons are now found online
-- locked serenity dependency version to v0.11.1
+- locked serenity dependency version to v0.11
 - client now has privileged access to context
+- fix argument endpoint detection on replies
 
 </details>
 
