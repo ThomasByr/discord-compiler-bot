@@ -88,7 +88,7 @@ pub async fn handle_request(
         Err(e) => {
             discordhelpers::delete_bot_reacts(&ctx, msg, loading_reaction).await?;
             return Err(CommandError::from(format!(
-                "Godbolt request failed!\n\n{}",
+                "Azure request failed!\n\n{}",
                 e
             )));
         }
