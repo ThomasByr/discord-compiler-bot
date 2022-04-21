@@ -93,13 +93,18 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 
 ## Changelog, Bugs and TODO
 
-<details><summary>**v0.1.1** first release (fix)</summary>
+<details><summary>v0.1.1 first release (patched)</summary>
+
+first release
 
 - support for 30 more languages
 - asm output
 - embedded messages for discord
 - `;invite`, `;botinfo` commands
 - icons are now found online
+
+first patch
+
 - locked serenity dependency version to v0.11
 - client now has privileged access to context
 - fix argument endpoint detection on replies
