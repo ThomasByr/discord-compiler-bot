@@ -76,8 +76,3 @@ src/                        #  Our source folder
     ├── discordhelpers.rs   ## Embed builders, menu builders, general tools to be used
     └── parser.rs           ## Compile/Asm command parsing logic
 ```
-
-Furthermore, the libraries that handle compilation dispatch are here:
-
-- [Wandbox](https://github.com/Headline/wandbox-rs)
-- [Godbolt](https://github.com/Headline/godbolt-rs)
