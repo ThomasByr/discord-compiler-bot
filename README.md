@@ -95,7 +95,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 
 <details><summary>v0.1.1 first release (patched)</summary>
 
-first release
+**v0.1.0** first release
 
 - support for 30 more languages
 - asm output
@@ -103,7 +103,7 @@ first release
 - `;invite`, `;botinfo` commands
 - icons are now found online
 
-first patch
+**v0.1.1** first patch
 
 - locked serenity dependency version to v0.11
 - client now has privileged access to context
@@ -115,7 +115,8 @@ first patch
 
 - [x] connect to Azure (v0.1.0)
 - [x] `;invite` (v0.1.0)
-- [ ] should make slash commands (but I'm lazy)
+- [x] should make slash commands (but I'm lazy) (v0.1.1)
+- [ ] should make more slash commands :(
 
 **Bugs** (latest fix)
 
