@@ -234,10 +234,10 @@ pub fn build_welcome_embed() -> CreateEmbed {
         ";compile python\n```py\nprint('hello world')\n```",
         true,
     );
-    embed.field("Learning Time!", "If you like reading the manuals of things, read our [getting started](https://github.com/Headline/discord-compiler-bot/wiki/Getting-Started) wiki or if you are confident type `;help` to view all commands.", false);
-    embed.field("Support", "If you ever run into any issues please stop by our [support server](https://discord.com/invite/nNNEZ6s) and we'll give you a hand.", true);
+    embed.field("Learning Time!", "If you like reading the manuals of things, read our [getting started](https://github.com/ThomasByr/discord-compiler-bot/wiki) wiki or if you are confident type `;help` to view all commands.", false);
+    embed.field("Support", "If you ever run into any issues please stop by our [GitHub](https://github.com/ThomasByr/discord-compiler-bot) and we'll give you a hand.", true);
     embed.footer(|f| {
-        f.text("powered by Azure & NVidia // created by Michael Flaherty (Headline#9999)")
+        f.text("powered by Azure & NVidia // created by ThomasByr")
     });
     embed
 }
