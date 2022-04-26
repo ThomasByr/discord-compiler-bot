@@ -7,6 +7,7 @@ edition = "2021"
 build = "src/build.rs"
 
 [dependencies]
+# openssl = { version = "0.10", features = ["vendored"] }
 tokio = { version = "1", features = ["full"] }
 reqwest = { version = "0.11" }
 dotenv = "0.15.0"
