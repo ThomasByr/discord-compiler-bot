@@ -67,8 +67,8 @@ impl CompilationManager {
                 Ok((result.0, result.1.to_embed(author, false)))
             }
             RequestHandler::WandBox => {
-                let result = self.wandbox(&parser_result).await?;
-                Ok((result.0, result.1.to_embed(&author, false)))
+                let result = self.wandbox(parser_result).await?;
+                Ok((result.0, result.1.to_embed(author, false)))
             }
             RequestHandler::None => Err(CommandError::from(format!(
                 "Unable to find compiler or language for target '{}'.",
