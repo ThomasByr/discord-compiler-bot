@@ -50,11 +50,8 @@ pub async fn get_components(
         end_point = parse_stop;
     }
     if let Some(index) = input.find('`') {
-        if end_point == 0 {
-            end_point = index;
-        }
+        if end_point == 0 || index < end_point {
         // if the ` character is found before \n we should use the ` as our parse stop point
-        else if index < end_point {
             end_point = index;
         }
     }
