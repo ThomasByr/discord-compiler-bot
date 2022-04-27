@@ -181,7 +181,7 @@ impl EventHandler for Handler {
                         .filter(move |r| r.emoji.eq(&reaction))
                         .await;
                     let _ = new_message.delete_reactions(&ctx.http).await;
-                    if let Some(_) = collector {
+                    if collector.is_some() {
                         let emb = match handle_request(
                             ctx.clone(),
                             format!(";compile\n```{}\n{}\n```", language, code),
