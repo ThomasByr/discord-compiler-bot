@@ -46,7 +46,7 @@ pub async fn get_components(
 
     // Find the index for where we should stop parsing user input
     let mut end_point: usize = input.len();
-    if let Some(parse_stop) = input.find("\n") {
+    if let Some(parse_stop) = input.find('\n') {
         end_point = parse_stop;
     }
     if let Some(index) = input.find('`') {
@@ -88,7 +88,7 @@ pub async fn get_components(
     // looping every argument
     let mut iter = args.iter();
     while let Some(c) = iter.next() {
-        if c.contains("\n") || c.contains("`") {
+        if c.contains('\n') || c.contains('`') {
             break;
         }
 
@@ -120,7 +120,7 @@ pub async fn get_components(
     }
 
     let cmdline_args;
-    if let Some(codeblock_start) = input.find("`") {
+    if let Some(codeblock_start) = input.find('`') {
         if end_point < codeblock_start {
             cmdline_args = String::from(input[end_point..codeblock_start].trim());
         } else {
@@ -262,7 +262,7 @@ pub async fn find_code_block(
         if let Some(statement) = cap.name("statement") {
             let include_stmt = statement.as_str();
             let url = cap.name("url").unwrap().as_str();
-            if let Ok(code) = get_url_code(url, &author).await {
+            if let Ok(code) = get_url_code(url, author).await {
                 println!("Replacing {} with {}", include_stmt, &code);
                 result.code = result.code.replace(include_stmt, &code);
             }
