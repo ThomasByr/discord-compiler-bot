@@ -280,7 +280,7 @@ pub async fn find_code_block(
 }
 
 pub async fn get_message_attachment(
-    attachments: &Vec<Attachment>,
+    attachments: &[Attachment],
 ) -> Result<(String, String), CommandError> {
     if !attachments.is_empty() {
         let attachment = attachments.get(0);
