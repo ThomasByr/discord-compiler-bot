@@ -1,4 +1,6 @@
 .env
+.env.base
+.env.beta
 *.exe
 blocklist.json
 Cargo.lock
