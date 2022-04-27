@@ -96,5 +96,5 @@ pub async fn handle_request(
     // remove our loading emote
     discordhelpers::delete_bot_reacts(&ctx, msg, loading_reaction).await?;
 
-    return Ok(result.1.to_embed(&author, false));
+    Ok(result.1.to_embed(&author, false))
 }

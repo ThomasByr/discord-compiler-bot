@@ -76,7 +76,7 @@ pub async fn handle_request(
     let parse_result = parser::get_components(
         &content,
         &author,
-        Some(&compilation_manager),
+        Some(compilation_manager),
         &msg.referenced_message,
     )
     .await?;
@@ -103,7 +103,7 @@ pub async fn handle_request(
     };
 
     // remove our loading emote
-    let _ = discordhelpers::delete_bot_reacts(&ctx, &msg, loading_reaction).await;
+    let _ = discordhelpers::delete_bot_reacts(&ctx, msg, loading_reaction).await;
 
     let is_success = is_success_embed(&result.1);
     let stats = data_read.get::<StatsManagerCache>().unwrap().lock().await;
