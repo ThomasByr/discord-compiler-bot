@@ -8,6 +8,7 @@
 [![Maintenance](https://img.shields.io/badge/Maintained%3F-yes-green.svg)](https://GitHub.com/ThomasByr/discord-compiler-bot/graphs/commit-activity)
 
 [![Continuous Integration](https://github.com/ThomasByr/discord-compiler-bot/actions/workflows/main.yml/badge.svg)](https://github.com/ThomasByr/discord-compiler-bot/actions/workflows/main.yml)
+[![rust-clippy analyze](https://github.com/ThomasByr/discord-compiler-bot/actions/workflows/rust-clippy.yml/badge.svg)](https://github.com/ThomasByr/discord-compiler-bot/actions/workflows/rust-clippy.yml)
 [![GitHub version](https://badge.fury.io/gh/ThomasByr%2Fdiscord-compiler-bot.svg)](https://github.com/ThomasByr/discord-compiler-bot)
 [![Author](https://img.shields.io/badge/author-@ThomasByr-blue)](https://github.com/ThomasByr)
 
