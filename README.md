@@ -93,7 +93,8 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 
 ## Changelog, Bugs and TODO
 
-<details><summary>v0.1.2 code cleaning and slash commands</summary>
+<details>
+    <summary>  Beta first minor release (click here to expand) </summary>
 
 **v0.1.0** first release
 
