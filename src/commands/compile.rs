@@ -76,13 +76,13 @@ pub async fn handle_request(
     let parse_result = parser::get_components(
         &content,
         &author,
-        Some(&compilation_manager),
+        Some(compilation_manager),
         &msg.referenced_message,
     )
     .await?;
 
     // send out loading emote
-    if let Err(_) = msg.react(&ctx.http, loading_reaction.clone()).await {
+    if msg.react(&ctx.http, loading_reaction.clone()).await.is_err() {
         return Err(CommandError::from("Unable to react to message, am I missing permissions to react or use external emoji?\n{}"));
     }
 
@@ -103,7 +103,7 @@ pub async fn handle_request(
     };
 
     // remove our loading emote
-    let _ = discordhelpers::delete_bot_reacts(&ctx, &msg, loading_reaction).await;
+    let _ = discordhelpers::delete_bot_reacts(&ctx, msg, loading_reaction).await;
 
     let is_success = is_success_embed(&result.1);
     let stats = data_read.get::<StatsManagerCache>().unwrap().lock().await;

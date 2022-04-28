@@ -42,7 +42,7 @@ pub async fn compilers(ctx: &Context, msg: &Message, _args: Args) -> CommandResu
         RequestHandler::WandBox => {
             match compiler_manager
                 .wbox
-                .get_compilers(&shortname_to_qualified(&language))
+                .get_compilers(shortname_to_qualified(language))
             {
                 Some(s) => {
                     for lang in s {

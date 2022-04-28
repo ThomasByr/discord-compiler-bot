@@ -93,7 +93,8 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 
 ## Changelog, Bugs and TODO
 
-<details><summary>v0.1.1 first release (patched)</summary>
+<details>
+    <summary>  Beta first minor release (click here to expand) </summary>
 
 **v0.1.0** first release
 
@@ -108,6 +109,14 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 - locked serenity dependency version to v0.11
 - client now has privileged access to context
 - fix argument endpoint detection on replies
+
+**v0.1.2** code cleaning and slash commands
+
+- integration of some easy slash commands
+- app commands to compile, format and make assembly
+- cargo clippy to help keep the code cleaner
+- deactivated local execution for some guilds
+- `;block` and `;unblock` commands working (blacklist)
 
 </details>
 

@@ -171,7 +171,7 @@ impl EventHandler for Handler {
                         }
                     };
 
-                    if let Err(_) = new_message.react(&ctx.http, reaction.clone()).await {
+                    if new_message.react(&ctx.http, reaction.clone()).await.is_err() {
                         return;
                     }
 
@@ -181,7 +181,7 @@ impl EventHandler for Handler {
                         .filter(move |r| r.emoji.eq(&reaction))
                         .await;
                     let _ = new_message.delete_reactions(&ctx.http).await;
-                    if let Some(_) = collector {
+                    if collector.is_some() {
                         let emb = match handle_request(
                             ctx.clone(),
                             format!(";compile\n```{}\n{}\n```", language, code),
@@ -302,7 +302,7 @@ impl EventHandler for Handler {
                     // send an edit, and if that fails we'll pivot to create a new interaction
                     // response
                     let fail_embed = embeds::build_fail_embed(&command.user, &e.to_string());
-                    if let Err(_) = send_error_msg(&ctx, &command, false, fail_embed.clone()).await
+                    if send_error_msg(&ctx, &command, false, fail_embed.clone()).await.is_err()
                     {
                         warn!("Sending new integration for error: {}", e);
                         let _ = send_error_msg(&ctx, &command, true, fail_embed.clone()).await;

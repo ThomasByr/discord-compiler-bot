@@ -114,18 +114,18 @@ pub async fn create_more_options_panel(
             parse_result.options = input
                 .value
                 .clone()
-                .split(" ")
+                .split(' ')
                 .map(|p| p.to_owned())
                 .collect();
         }
         if let ActionRowComponent::InputText(input) = &resp.data.components[1].components[0] {
-            parse_result.args = input.value.split(" ").map(|p| p.to_owned()).collect();
+            parse_result.args = input.value.split(' ').map(|p| p.to_owned()).collect();
         }
         if let ActionRowComponent::InputText(input) = &resp.data.components[2].components[0] {
             parse_result.stdin = input.value.clone();
         }
         resp.defer(&ctx.http).await?;
-        return Ok(Some(resp.clone()));
+        Ok(Some(resp.clone()))
     } else {
         Ok(None)
     }
@@ -302,29 +302,46 @@ where
 {
     let mut parse_result = ParserResult::default();
 
-    let mut msg = None;
-    for (_, value) in &command.data.resolved.messages {
-        if !parser::find_code_block(&mut parse_result, &value.content, &command.user).await? {
-            command
-                .create_interaction_response(&ctx.http, |resp| {
-                    resp.kind(InteractionResponseType::DeferredChannelMessageWithSource)
-                        .interaction_response_data(|data| {
-                            data.flags(InteractionApplicationCommandCallbackDataFlags::EPHEMERAL)
-                        })
-                })
-                .await?;
-            return Err(CommandError::from("Unable to find a codeblock to compile!"));
-        }
-        msg = Some(value);
-        break;
+    // let mut msg = None;
+    // for (_, value) in &command.data.resolved.messages {
+    //     if !parser::find_code_block(&mut parse_result, &value.content, &command.user).await? {
+    //         command
+    //             .create_interaction_response(&ctx.http, |resp| {
+    //                 resp.kind(InteractionResponseType::DeferredChannelMessageWithSource)
+    //                     .interaction_response_data(|data| {
+    //                         data.flags(InteractionApplicationCommandCallbackDataFlags::EPHEMERAL)
+    //                     })
+    //             })
+    //             .await?;
+    //         return Err(CommandError::from("Unable to find a codeblock to compile!"));
+    //     }
+    //     msg = Some(value);
+    //     break;
+    // }
+
+    if command.data.resolved.messages.is_empty() {
+        return Err(CommandError::from("Unable to find a codeblock to compile!"));
     }
+    let value = command.data.resolved.messages.values().next().unwrap();
+    if !parser::find_code_block(&mut parse_result, &value.content, &command.user).await? {
+        command
+            .create_interaction_response(&ctx.http, |resp| {
+                resp.kind(InteractionResponseType::DeferredChannelMessageWithSource)
+                    .interaction_response_data(|data| {
+                        data.flags(InteractionApplicationCommandCallbackDataFlags::EPHEMERAL)
+                    })
+            })
+            .await?;
+        return Err(CommandError::from("Unable to find a codeblock to compile!"));
+    }
+    let msg = Some(value);
 
     // We never got a target from the codeblock, let's have them manually select a language
     let mut sent_interaction = false;
     if parse_result.target.is_empty() {
         command
             .create_interaction_response(&ctx.http, |response| {
-                create_language_interaction(response, &languages)
+                create_language_interaction(response, languages)
             })
             .await?;
 
@@ -426,7 +443,7 @@ where
     }
 
     command
-        .edit_original_interaction_response(&ctx.http, |resp| create_think_interaction(resp))
+        .edit_original_interaction_response(&ctx.http, create_think_interaction)
         .await
         .unwrap();
 
@@ -473,7 +490,7 @@ where
 
     let int_resp = command.get_interaction_response(&ctx.http).await?;
     if let Some(int) = int_resp.await_component_interaction(&ctx.shard).await {
-        int.create_interaction_response(&ctx.http, |resp| create_dismiss_response(resp))
+        int.create_interaction_response(&ctx.http, create_dismiss_response)
             .await?;
 
         // dispatch final response

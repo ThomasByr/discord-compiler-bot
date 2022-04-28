@@ -102,12 +102,11 @@ impl ToEmbed<bool> for godbolt::GodboltResponse {
                 i += 1;
             }
             if !append.is_empty() {
-                let title;
-                if i > 1 {
-                    title = format!("Assembly Output Pt. {}", i);
+                let title = if i > 1 {
+                    format!("Assembly Output Pt. {}", i)
                 } else {
-                    title = String::from("Assembly Output")
-                }
+                    String::from("Assembly Output")
+                };
                 embed.field(&title, format!("```x86asm\n{}\n```", &append), false);
                 output = true;
             }
@@ -236,9 +235,7 @@ pub fn build_welcome_embed() -> CreateEmbed {
     );
     embed.field("Learning Time!", "If you like reading the manuals of things, read our [getting started](https://github.com/ThomasByr/discord-compiler-bot/wiki) wiki or if you are confident type `;help` to view all commands.", false);
     embed.field("Support", "If you ever run into any issues please stop by our [GitHub](https://github.com/ThomasByr/discord-compiler-bot) and we'll give you a hand.", true);
-    embed.footer(|f| {
-        f.text("powered by Azure & NVidia // created by ThomasByr")
-    });
+    embed.footer(|f| f.text("powered by Azure & NVidia // created by ThomasByr"));
     embed
 }
 

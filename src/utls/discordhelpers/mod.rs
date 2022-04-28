@@ -92,7 +92,7 @@ pub async fn handle_edit(
 
     if content.starts_with(&format!("{}asm", prefix)) {
         if let Err(e) = handle_edit_asm(
-            &ctx,
+            ctx,
             content,
             author.clone(),
             old.clone(),
@@ -101,11 +101,11 @@ pub async fn handle_edit(
         .await
         {
             let err = embeds::build_fail_embed(&author, &e.to_string());
-            embeds::edit_message_embed(&ctx, &mut old, err).await;
+            embeds::edit_message_embed(ctx, &mut old, err).await;
         }
     } else if content.starts_with(&format!("{}compile", prefix)) {
         if let Err(e) = handle_edit_compile(
-            &ctx,
+            ctx,
             content,
             author.clone(),
             old.clone(),
@@ -114,11 +114,11 @@ pub async fn handle_edit(
         .await
         {
             let err = embeds::build_fail_embed(&author, &e.to_string());
-            embeds::edit_message_embed(&ctx, &mut old, err).await;
+            embeds::edit_message_embed(ctx, &mut old, err).await;
         }
     } else if content.starts_with(&format!("{}cpp", prefix)) {
         if let Err(e) = handle_edit_cpp(
-            &ctx,
+            ctx,
             content,
             author.clone(),
             old.clone(),
@@ -127,11 +127,11 @@ pub async fn handle_edit(
         .await
         {
             let err = embeds::build_fail_embed(&author, &e.to_string());
-            embeds::edit_message_embed(&ctx, &mut old, err).await;
+            embeds::edit_message_embed(ctx, &mut old, err).await;
         }
     } else {
         let err = embeds::build_fail_embed(&author, "Invalid command for edit functionality!");
-        embeds::edit_message_embed(&ctx, &mut old, err).await;
+        embeds::edit_message_embed(ctx, &mut old, err).await;
     }
 }
 
@@ -148,7 +148,7 @@ pub async fn handle_edit_cpp(
     let compilation_successful = embed.0.get("color").unwrap() == COLOR_OKAY;
     discordhelpers::send_completion_react(ctx, &old, compilation_successful).await?;
 
-    embeds::edit_message_embed(&ctx, &mut old, embed).await;
+    embeds::edit_message_embed(ctx, &mut old, embed).await;
     Ok(())
 }
 
@@ -166,7 +166,7 @@ pub async fn handle_edit_compile(
     let compilation_successful = embed.0.get("color").unwrap() == COLOR_OKAY;
     discordhelpers::send_completion_react(ctx, &old, compilation_successful).await?;
 
-    embeds::edit_message_embed(&ctx, &mut old, embed).await;
+    embeds::edit_message_embed(ctx, &mut old, embed).await;
     Ok(())
 }
 
@@ -181,7 +181,7 @@ pub async fn handle_edit_asm(
         crate::commands::asm::handle_request(ctx.clone(), content, author, &original_msg).await?;
 
     let success = emb.0.get("color").unwrap() == COLOR_OKAY;
-    embeds::edit_message_embed(&ctx, &mut old, emb).await;
+    embeds::edit_message_embed(ctx, &mut old, emb).await;
 
     send_completion_react(ctx, &old, success).await?;
     Ok(())
@@ -228,17 +228,16 @@ pub async fn send_completion_react(
 // Here we also limit the text to 1000 chars, this prevents discord from
 // rejecting our embeds for being to long if someone decides to spam.
 pub fn conform_external_str(input: &str, max_len: usize) -> String {
-    let mut str: String;
-    if let Ok(vec) = strip_ansi_escapes::strip(input) {
-        str = String::from_utf8_lossy(&vec).to_string();
+    let mut str = if let Ok(vec) = strip_ansi_escapes::strip(input) {
+        String::from_utf8_lossy(&vec).to_string()
     } else {
-        str = String::from(input);
-    }
+        String::from(input)
+    };
 
     // while we're at it, we'll escape ` characters with a
     // zero-width space to prevent our embed from getting
     // messed up later
-    str = str.replace("`", "\u{200B}`");
+    str = str.replace('`', "\u{200B}`");
 
     // Conform our string.
     if str.len() > MAX_OUTPUT_LEN {

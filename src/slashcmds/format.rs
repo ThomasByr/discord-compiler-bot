@@ -15,16 +15,26 @@ use serenity::{
 use std::time::Duration;
 
 pub async fn format(ctx: &Context, command: &ApplicationCommandInteraction) -> CommandResult {
-    let mut msg = None;
+    // let mut msg = None;
     let mut parse_result = ParserResult::default();
 
-    for (_, value) in &command.data.resolved.messages {
-        if !parser::find_code_block(&mut parse_result, &value.content, &command.user).await? {
-            return Err(CommandError::from("Unable to find a codeblock to format!"));
-        }
-        msg = Some(value);
-        break;
+    // for (_, value) in &command.data.resolved.messages {
+    //     if !parser::find_code_block(&mut parse_result, &value.content, &command.user).await? {
+    //         return Err(CommandError::from("Unable to find a codeblock to format!"));
+    //     }
+    //     msg = Some(value);
+    //     break;
+    // }
+
+    if command.data.resolved.messages.is_empty() {
+        return Err(CommandError::from("Unable to find a codeblock to format!"));
     }
+
+    let value = command.data.resolved.messages.values().next().unwrap();
+    if !parser::find_code_block(&mut parse_result, &value.content, &command.user).await? {
+        return Err(CommandError::from("Unable to find a codeblock to format!"));
+    }
+    let msg = Some(value);
 
     let data = ctx.data.read().await;
     let comp_mgr = data.get::<CompilerCache>().unwrap().read().await;
@@ -85,7 +95,7 @@ pub async fn format(ctx: &Context, command: &ApplicationCommandInteraction) -> C
         .timeout(Duration::from_secs(30));
     cic = cib.build();
     selected = false;
-    let mut style = String::from("WebKit");
+    let mut style = String::from("Google");
     while let Some(interaction) = &cic.next().await {
         match interaction.data.custom_id.as_str() {
             "style" => {
@@ -166,7 +176,7 @@ fn create_styles_interaction<'a>(
                     for style in styles {
                         opts.create_option(|opt| {
                             opt.label(style).value(style);
-                            if style == "WebKit" {
+                            if style == "Google" {
                                 opt.default_selection(true);
                             }
                             opt
