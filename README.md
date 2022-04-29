@@ -118,6 +118,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 - cargo clippy to help keep the code cleaner
 - deactivated local execution for some guilds
 - `;block` and `;unblock` commands working (blacklist)
+- added boilerplate code for some languages
 
 </details>
 
