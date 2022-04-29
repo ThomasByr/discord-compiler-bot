@@ -1,6 +1,7 @@
 #![type_length_limit = "1146253"]
 
 mod apis;
+mod boilerplate;
 mod cache;
 mod commands;
 mod cppeval;

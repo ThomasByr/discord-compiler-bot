@@ -10,11 +10,15 @@ use serenity::{
 };
 use std::collections::HashMap;
 
-pub struct CommandManager;
+pub struct CommandManager {
+    command_registered: bool,
+}
 
 impl CommandManager {
     pub fn new() -> Self {
-        CommandManager {}
+        CommandManager {
+            command_registered: false,
+        }
     }
 
     pub async fn on_command(
@@ -49,7 +53,12 @@ impl CommandManager {
         }
     }
 
-    pub async fn register_commands(&self, ctx: &Context) {
+    pub async fn register_commands(&mut self, ctx: &Context) {
+        if self.command_registered {
+            return;
+        }
+        self.command_registered = true;
+
         let data_read = ctx.data.read().await;
         let compiler_cache = data_read.get::<CompilerCache>().unwrap();
         let compiler_manager = compiler_cache.read().await;
@@ -105,5 +114,6 @@ impl CommandManager {
         {
             error!("Unable to create application commands: {}", err);
         }
+        info!("Registered application commands");
     }
 }

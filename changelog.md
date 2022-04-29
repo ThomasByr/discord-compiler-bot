@@ -25,3 +25,4 @@
 - cargo clippy to help keep the code cleaner
 - deactivated local execution for some guilds
 - `;block` and `;unblock` commands working (blacklist)
+- added boilerplate code for some languages
