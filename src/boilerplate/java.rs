@@ -1,5 +1,6 @@
 use crate::boilerplate::generator::BoilerPlateGenerator;
-use regex::Regex;
+
+use crate::utls::constants::JAVA_MAIN_REGEX;
 
 pub struct JavaGenerator {
     input: String,
@@ -34,10 +35,7 @@ impl BoilerPlateGenerator for JavaGenerator {
     }
 
     fn needs_boilerplate(&self) -> bool {
-        let java_main_regex: Regex =
-            Regex::new("\"[^\"]+\"|(?P<main>public[\\s]+?static[\\s]+?void[\\s]+?main[\\s]*?\\()")
-                .unwrap();
-        for m in java_main_regex.captures_iter(&self.input) {
+        for m in JAVA_MAIN_REGEX.captures_iter(&self.input) {
             if m.name("main").is_some() {
                 return false;
             }

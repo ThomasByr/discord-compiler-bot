@@ -1,3 +1,4 @@
+use crate::boilerplate::c::CGenerator;
 use crate::boilerplate::cpp::CppGenerator;
 use crate::boilerplate::csharp::CSharpGenerator;
 use crate::boilerplate::java::JavaGenerator;
@@ -51,7 +52,8 @@ impl BoilerPlateGenerator for Null {
 
 pub fn boilerplate_factory(language: &str, code: &str) -> BoilerPlate<dyn BoilerPlateGenerator> {
     match language {
-        "c++" | "c" => BoilerPlate::new(Box::new(CppGenerator::new(code))),
+        "c++" => BoilerPlate::new(Box::new(CppGenerator::new(code))),
+        "c" => BoilerPlate::new(Box::new(CGenerator::new(code))),
         "java" => BoilerPlate::new(Box::new(JavaGenerator::new(code))),
         "c#" => BoilerPlate::new(Box::new(CSharpGenerator::new(code))),
         // since all compilations go through this path, we have a Null generator whose

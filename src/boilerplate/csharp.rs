@@ -1,5 +1,6 @@
 use crate::boilerplate::generator::BoilerPlateGenerator;
-use regex::Regex;
+
+use crate::utls::constants::CSHARP_MAIN_REGEX;
 
 pub struct CSharpGenerator {
     input: String,
@@ -38,9 +39,7 @@ impl BoilerPlateGenerator for CSharpGenerator {
     }
 
     fn needs_boilerplate(&self) -> bool {
-        let cpp_main_regex: Regex =
-            Regex::new("\"[^\"]+\"|(?P<main>static[\\s]+?void[\\s]+?Main[\\s]*?\\()").unwrap();
-        for m in cpp_main_regex.captures_iter(&self.input) {
+        for m in CSHARP_MAIN_REGEX.captures_iter(&self.input) {
             if m.name("main").is_some() {
                 return false;
             }
