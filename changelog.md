@@ -26,3 +26,9 @@
 - deactivated local execution for some guilds
 - `;block` and `;unblock` commands working (blacklist)
 - added boilerplate code for some languages
+
+**v0.1.3** local rights and corrections
+
+- patched boilerplate code gen for java
+- c detached from c++ boilerplate
+- created alternate server count
