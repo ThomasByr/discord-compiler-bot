@@ -1,5 +1,4 @@
-#[cfg(test)]
-
-pub mod parser;
-pub mod cpp;
 pub mod boilerplate;
+pub mod cpp;
+#[cfg(test)]
+pub mod parser;

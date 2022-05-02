@@ -1,4 +1,5 @@
 use crate::boilerplate::generator::BoilerPlateGenerator;
+
 use crate::utls::constants::C_LIKE_MAIN_REGEX;
 
 pub struct CGenerator {

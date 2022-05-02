@@ -302,7 +302,7 @@ where
 {
     let mut parse_result = ParserResult::default();
 
-    // let mut msg = None;
+    let mut msg = None;
     // for (_, value) in &command.data.resolved.messages {
     //     if !parser::find_code_block(&mut parse_result, &value.content, &command.user).await? {
     //         command
@@ -319,22 +319,20 @@ where
     //     break;
     // }
 
-    if command.data.resolved.messages.is_empty() {
-        return Err(CommandError::from("Unable to find a codeblock to compile!"));
+    if let Some((_, value)) = command.data.resolved.messages.iter().next() {
+        if !parser::find_code_block(&mut parse_result, &value.content, &command.user).await? {
+            command
+                .create_interaction_response(&ctx.http, |resp| {
+                    resp.kind(InteractionResponseType::DeferredChannelMessageWithSource)
+                        .interaction_response_data(|data| {
+                            data.flags(InteractionApplicationCommandCallbackDataFlags::EPHEMERAL)
+                        })
+                })
+                .await?;
+            return Err(CommandError::from("Unable to find a codeblock to compile!"));
+        }
+        msg = Some(value);
     }
-    let value = command.data.resolved.messages.values().next().unwrap();
-    if !parser::find_code_block(&mut parse_result, &value.content, &command.user).await? {
-        command
-            .create_interaction_response(&ctx.http, |resp| {
-                resp.kind(InteractionResponseType::DeferredChannelMessageWithSource)
-                    .interaction_response_data(|data| {
-                        data.flags(InteractionApplicationCommandCallbackDataFlags::EPHEMERAL)
-                    })
-            })
-            .await?;
-        return Err(CommandError::from("Unable to find a codeblock to compile!"));
-    }
-    let msg = Some(value);
 
     // We never got a target from the codeblock, let's have them manually select a language
     let mut sent_interaction = false;
