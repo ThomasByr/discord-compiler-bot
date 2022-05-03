@@ -2,11 +2,11 @@ use crate::boilerplate::generator::BoilerPlateGenerator;
 
 use crate::utls::constants::C_LIKE_MAIN_REGEX;
 
-pub struct CppGenerator {
+pub struct CGenerator {
     input: String,
 }
 
-impl BoilerPlateGenerator for CppGenerator {
+impl BoilerPlateGenerator for CGenerator {
     fn new(input: &str) -> Self {
         let mut formated = input.to_string();
         formated = formated.replace(';', ";\n"); // separate lines by ;
@@ -28,9 +28,8 @@ impl BoilerPlateGenerator for CppGenerator {
             }
         }
 
-        // if they included nothing, we can just manually include everything
-        if !header.contains("#include") {
-            header.push_str("#include <bits/stdc++.h>");
+        if main_body.contains("printf") && header.contains("stdio.h") {
+            header.push_str("include <stdio.h>")
         }
         format!("{}\nint main(void) {{\n{}return 0;\n}}", header, main_body)
     }

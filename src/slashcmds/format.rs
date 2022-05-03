@@ -15,7 +15,7 @@ use serenity::{
 use std::time::Duration;
 
 pub async fn format(ctx: &Context, command: &ApplicationCommandInteraction) -> CommandResult {
-    // let mut msg = None;
+    let mut msg = None;
     let mut parse_result = ParserResult::default();
 
     // for (_, value) in &command.data.resolved.messages {
@@ -26,15 +26,12 @@ pub async fn format(ctx: &Context, command: &ApplicationCommandInteraction) -> C
     //     break;
     // }
 
-    if command.data.resolved.messages.is_empty() {
-        return Err(CommandError::from("Unable to find a codeblock to format!"));
+    if let Some((_, value)) = command.data.resolved.messages.iter().next() {
+        if !parser::find_code_block(&mut parse_result, &value.content, &command.user).await? {
+            return Err(CommandError::from("Unable to find a codeblock to format!"));
+        }
+        msg = Some(value);
     }
-
-    let value = command.data.resolved.messages.values().next().unwrap();
-    if !parser::find_code_block(&mut parse_result, &value.content, &command.user).await? {
-        return Err(CommandError::from("Unable to find a codeblock to format!"));
-    }
-    let msg = Some(value);
 
     let data = ctx.data.read().await;
     let comp_mgr = data.get::<CompilerCache>().unwrap().read().await;

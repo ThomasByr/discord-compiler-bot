@@ -51,7 +51,7 @@ pub async fn get_components(
     }
     if let Some(index) = input.find('`') {
         if end_point == 0 || index < end_point {
-        // if the ` character is found before \n we should use the ` as our parse stop point
+            // if the ` character is found before \n we should use the ` as our parse stop point
             end_point = index;
         }
     }
@@ -180,7 +180,6 @@ pub async fn get_components(
         return Err(CommandError::from("You must provide a valid language or compiler!\n\n;compile c++ \n\\`\\`\\`\nint main() {}\n\\`\\`\\`"));
     }
 
-    //println!("Parse object: {:?}", result);
     Ok(result)
 }
 

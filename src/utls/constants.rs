@@ -1,3 +1,6 @@
+use lazy_static::lazy_static;
+use regex::Regex;
+
 //pub const COLOR_OKAY : i32 = 0x046604;
 pub const COLOR_OKAY: u32 = 0x5dbcd2;
 //pub const COLOR_FAIL : i32 = 0x660404;
@@ -20,6 +23,22 @@ pub const URL_ALLOW_LIST: [&str; 4] = [
     "hastebin.com",
     "raw.githubusercontent.com",
 ];
+
+// Boilerplate Regexes
+lazy_static! {
+    pub static ref JAVA_MAIN_REGEX: Regex =
+        Regex::new("\"[^\"]+\"|(?P<main>void[\\s]+?main[\\s]*?\\()").unwrap();
+    pub static ref C_LIKE_MAIN_REGEX: Regex =
+        Regex::new("\"[^\"]+\"|(?P<main>main[\\s]*?\\()").unwrap();
+    pub static ref CSHARP_MAIN_REGEX: Regex =
+        Regex::new("\"[^\"]+\"|(?P<main>static[\\s]+?void[\\s]+?Main[\\s]*?\\()").unwrap();
+}
+
+// Other Regexes
+lazy_static! {
+    pub static ref JAVA_PUBLIC_CLASS_REGEX: Regex =
+        Regex::new("\"[^\"]+\"|(?P<public>public)[\\s]+?class[\\s]*?").unwrap();
+}
 
 /*
    Discord limits the size of the amount of compilers we can display to users, for some languages
