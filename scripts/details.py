@@ -56,7 +56,7 @@ def update(chg: list[str]) -> None:
             elif "</details>" in e:
                 index1 = i
         else:
-            if "## Changelog" in e:
+            if ("Changelog" in e or "changelog" in e) and "##" in e:
                 seen = True
     if not seen:
         raise ValueError("Error [README make] : no changelog subsection found")
