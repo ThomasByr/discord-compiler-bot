@@ -65,5 +65,7 @@ pub async fn cpp(ctx: &Context, msg: &ApplicationCommandInteraction) -> CommandR
         })
         .await?;
     }
+
+    debug!("Command executed");
     Ok(())
 }

@@ -21,6 +21,6 @@ pub async fn invite(ctx: &Context, msg: &ApplicationCommandInteraction) -> Comma
             .interaction_response_data(|data| data.add_embed(emb))
     })
     .await?;
-
+    debug!("Command executed");
     Ok(())
 }

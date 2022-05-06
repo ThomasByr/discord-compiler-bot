@@ -32,5 +32,6 @@ pub async fn asm(ctx: &Context, command: &ApplicationCommandInteraction) -> Comm
         },
     )
     .await?;
+    debug!("Command executed");
     Ok(())
 }

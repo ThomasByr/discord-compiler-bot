@@ -19,5 +19,6 @@ pub async fn ping(ctx: &Context, msg: &ApplicationCommandInteraction) -> Command
         resp.content(format!("🏓 Pong!\n{} ms", (new - old).as_millis()))
     })
     .await?;
+    debug!("Command executed");
     Ok(())
 }

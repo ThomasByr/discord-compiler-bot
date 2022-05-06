@@ -34,5 +34,6 @@ pub async fn compile(ctx: &Context, command: &ApplicationCommandInteraction) -> 
         },
     )
     .await?;
+    debug!("Command executed");
     Ok(())
 }
