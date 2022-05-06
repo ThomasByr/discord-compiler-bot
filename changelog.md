@@ -32,3 +32,5 @@
 - patched boilerplate code gen for java
 - c detached from c++ boilerplate
 - created alternate server count
+- new `diff` slash command with colored output
+- boilerplate code for php
