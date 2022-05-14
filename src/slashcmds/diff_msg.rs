@@ -96,5 +96,7 @@ pub async fn diff_msg(ctx: &Context, msg: &ApplicationCommandInteraction) -> Com
         })
         .await?;
     }
+
+    debug!("Command executed");
     Ok(())
 }
