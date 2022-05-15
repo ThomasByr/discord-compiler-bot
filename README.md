@@ -5,10 +5,11 @@
 [![GitHub license](https://img.shields.io/github/license/ThomasByr/discord-compiler-bot)](https://github.com/ThomasByr/discord-compiler-bot/blob/master/LICENSE)
 [![GitHub commits](https://badgen.net/github/commits/ThomasByr/discord-compiler-bot)](https://GitHub.com/ThomasByr/discord-compiler-bot/commit/)
 [![GitHub latest commit](https://badgen.net/github/last-commit/ThomasByr/discord-compiler-bot)](https://gitHub.com/ThomasByr/discord-compiler-bot/commit/)
-[![Maintenance](https://img.shields.io/badge/Maintained%3F-yes-green.svg)](https://GitHub.com/ThomasByr/discord-compiler-bot/graphs/commit-activity)
+[![Maintenance](https://img.shields.io/badge/maintained%3F-yes-green.svg)](https://GitHub.com/ThomasByr/discord-compiler-bot/graphs/commit-activity)
 
 [![Continuous Integration](https://github.com/ThomasByr/discord-compiler-bot/actions/workflows/main.yml/badge.svg)](https://github.com/ThomasByr/discord-compiler-bot/actions/workflows/main.yml)
 [![rust-clippy analyze](https://github.com/ThomasByr/discord-compiler-bot/actions/workflows/rust-clippy.yml/badge.svg)](https://github.com/ThomasByr/discord-compiler-bot/actions/workflows/rust-clippy.yml)
+[![Publish](https://github.com/ThomasByr/discord-compiler-bot/actions/workflows/publish.yml/badge.svg)](https://github.com/ThomasByr/discord-compiler-bot/actions/workflows/publish.yml)
 [![GitHub version](https://badge.fury.io/gh/ThomasByr%2Fdiscord-compiler-bot.svg)](https://github.com/ThomasByr/discord-compiler-bot)
 [![Author](https://img.shields.io/badge/author-@ThomasByr-blue)](https://github.com/ThomasByr)
 
