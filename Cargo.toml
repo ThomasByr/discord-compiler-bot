@@ -35,7 +35,7 @@ futures-util = "0.3.6"
 warp = "0.3"
 chrono = "0.4.19"
 
-[target.'cfg(armv7)'.dependencies]
+[target.'cfg(target_arch = "arm")'.dependencies]
 openssl = { version = "0.10", features = ["vendored"] }
 
 [dependencies.serenity]
