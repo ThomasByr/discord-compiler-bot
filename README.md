@@ -128,6 +128,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 - created alternate server count
 - new `diff` slash command with colored output
 - boilerplate code for php
+- pinned serenity dependency to 0.11.1 to avoid headaches
 
 </details>
 
