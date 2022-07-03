@@ -104,7 +104,7 @@ Please read the [changelog](changelog.md) file for the full history !
 %%{init: { 'logLevel': 'debug', 'theme': 'dark' } }%%
 
 gantt
-title Timeline
+title My Coding Journey
 dateFormat YYYY-MM-DD
 
     section source Code (v0.1)
