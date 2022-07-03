@@ -46,3 +46,4 @@
 - unwrap leading to panic
 - if api don't return status, assume we failed
 - throw more compilation info in footer
+- cared about performance for once
