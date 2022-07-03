@@ -98,7 +98,8 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 
 Please read the [changelog](changelog.md) file for the full history !
 
-<div class="x-scrollable"><div style="width: 3800px;">
+<div class="x-scrollable">
+<div style="width: 3800px;">
 
 ```mermaid
 %%{init: { 'logLevel': 'debug', 'theme': 'dark' } }%%
@@ -120,7 +121,8 @@ dateFormat YYYY-MM-DD
 
 ```
 
-</div></div>
+</div>
+</div>
 
 <details>
     <summary>  Beta first minor release (click here to expand) </summary>
