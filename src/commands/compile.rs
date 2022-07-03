@@ -16,6 +16,8 @@ use serenity::model::user::User;
 use crate::cache::{CompilerCache, ConfigCache, StatsManagerCache};
 use crate::managers::compilation::CompilationManager;
 
+use std::fmt::Write as _;
+
 #[command]
 #[bucket = "nospam"]
 pub async fn compile(ctx: &Context, msg: &Message, _args: Args) -> CommandResult {
@@ -68,7 +70,8 @@ pub async fn handle_request(
     // Try to load in an attachment
     let (code, ext) = parser::get_message_attachment(&msg.attachments).await?;
     if !code.is_empty() {
-        content.push_str(&format!("\n```{}\n{}\n```\n", ext, code));
+        // content.push_str(&format!("\n```{}\n{}\n```\n", ext, code));
+        writeln!(content, "\n```{}\n{}\n```", ext, code).unwrap();
     }
 
     // parse user input

@@ -12,6 +12,8 @@ use serenity::builder::CreateEmbed;
 use serenity::model::channel::{Message, ReactionType};
 use serenity::model::user::User;
 
+use std::fmt::Write as _;
+
 use crate::utls::parser;
 
 #[command]
@@ -62,7 +64,8 @@ pub async fn handle_request(
     // Try to load in an attachment
     let (code, ext) = parser::get_message_attachment(&msg.attachments).await?;
     if !code.is_empty() {
-        content.push_str(&format!("\n```{}\n{}\n```\n", ext, code));
+        // content.push_str(&format!("\n```{}\n{}\n```\n", ext, code));
+        writeln!(content, "\n```{}\n{}\n```", ext, code).unwrap();
     }
 
     // parse user input

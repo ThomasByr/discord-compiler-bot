@@ -7,6 +7,8 @@ use serenity::prelude::*;
 use crate::utls::constants::{COLOR_OKAY, ICON_HELP};
 use crate::utls::discordhelpers::embeds;
 
+use std::fmt::Write as _;
+
 #[command]
 pub async fn formats(ctx: &Context, msg: &Message, _args: Args) -> CommandResult {
     let data = ctx.data.read().await;
@@ -35,10 +37,12 @@ pub async fn formats(ctx: &Context, msg: &Message, _args: Args) -> CommandResult
         let mut output = String::new();
         output.push_str("Styles:\n");
         if format.styles.is_empty() {
-            output.push_str("    *(None)*\n");
+            // output.push_str("    *(None)*\n");
+            writeln!(output, "    *(None)*").unwrap();
         }
         for style in &format.styles {
-            output.push_str(&format!("    *- {}*\n", style));
+            // output.push_str(&format!("    *- {}*\n", style));
+            writeln!(output, "    *- {}*", style).unwrap();
         }
         emb.field(&format.format_type, &output, false);
     }
