@@ -40,7 +40,8 @@ int main(int argc, char** argv) {
 3. [💁 Get Help](#-get-help)
 4. [🔰 Support](#-support)
 5. [⚖️ License](#️-license)
-6. [🔄 Changelog, Bugs and TODO](#-changelog-bugs-and-todo)
+6. [🔄 Changelog](#-changelog)
+7. [🐛 Bugs and TODO](#-bugs-and-todo)
 
 ## ✏️ In short
 
@@ -93,7 +94,26 @@ This project is licensed under the GPL-3.0 new or revised license. Please read t
 
 THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-## 🔄 Changelog, Bugs and TODO
+## 🔄 Changelog
+
+Please read the [changelog](changelog.md) file for the full history !
+
+```mermaid
+gantt
+    title Timeline
+    dateFormat YYYY-MM-DD
+
+    section source Code (v0.1)
+    patch 0   : 2022-04-18, 1d
+    patch 1   :             1d
+    patch 2   : 2022-04-30, 2d
+    patch 3   :             1d
+    patch 4   : 2022-06-18, 3d
+    patch 5   : 2022-06-30, 3d
+
+    section Production release
+    crates.io : 2022-04-18, 0d
+```
 
 <details>
     <summary>  Beta first minor release (click here to expand) </summary>
@@ -140,8 +160,11 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 - unwrap leading to panic
 - if api don't return status, assume we failed
 - throw more compilation info in footer
+- cared about performance for once
 
 </details>
+
+## 🐛 Bugs and TODO
 
 **TODO** (first implementation version)
 
