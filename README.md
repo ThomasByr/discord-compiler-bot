@@ -98,10 +98,14 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 
 Please read the [changelog](changelog.md) file for the full history !
 
+<div class="x-scrollable"><div style="width: 3800px;">
+
 ```mermaid
+%%{init: { 'logLevel': 'debug', 'theme': 'dark' } }%%
+
 gantt
-    title Timeline
-    dateFormat YYYY-MM-DD
+title Timeline
+dateFormat YYYY-MM-DD
 
     section source Code (v0.1)
     patch 0   : 2022-04-18, 1d
@@ -113,7 +117,10 @@ gantt
 
     section Production release
     crates.io : 2022-04-18, 0d
+
 ```
+
+</div></div>
 
 <details>
     <summary>  Beta first minor release (click here to expand) </summary>
@@ -178,3 +185,7 @@ gantt
 - ~~`;botinfo` command not working~~ (v0.1.0)
 - ~~total number of servers joined always showing 0~~ (v0.1.1)
 - ~~debug commands not showing up in console (might be linked to previous bug)~~ (v0.1.1)
+
+```
+
+```
