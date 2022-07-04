@@ -14,11 +14,11 @@
 [![Author](https://img.shields.io/badge/author-@ThomasByr-blue)](https://github.com/ThomasByr)
 
 ````txt
-;compile c++ -O3 -Wall -Wextra -Werror
+;compile c++ -O3 -Wall -Wextra -Werror -Wpedantic
 argv1 argv2 argv3
 ```
-stdin1
-stdin2 not displayed
+stdin1 on the first line
+stdin2 on the second line
 ```
 ```cpp
 #include <iostream>
@@ -28,9 +28,9 @@ int main(int argc, char** argv) {
     (void)argc;
     std::string str;
     std::getline(std::cin, str);
-    std::cout << str << std::endl;
-    std::cout << argv[1] << std::endl;
-    return 0;
+    std::cout << str << "\n"
+              << argv[1] << std::endl;
+    return EXIT_SUCCESS;
 }
 ```
 ````
@@ -40,7 +40,7 @@ int main(int argc, char** argv) {
 3. [💁 Get Help](#-get-help)
 4. [🔰 Support](#-support)
 5. [⚖️ License](#️-license)
-6. [🔄 Changelog](#-changelog)
+6. [🔄 Changelog and contributing](#-changelog-and-contributing)
 7. [🐛 Bugs and TODO](#-bugs-and-todo)
 
 ## ✏️ In short
@@ -74,11 +74,11 @@ While in discord, please type `;help` to get generic help and show a list of ava
 - `;languages` will show a menu to display all languages
 - `;asm` will transform the code block into Assembly \_x86_64 for linux
 
-If you want to contribute, please read the [contributing](.github/CONTRIBUTING.md) guideline, make pull requests and be kind.
-
 ## 🔰 Support
 
 Support for following languages : c++, c, java, python, ruby, rust, javascript, go, php, lua and many more.
+
+On a side note, support has been added for ARM architectures. Meaning you can now host the bot yourself on a Raspberry PI without any tweaks to the code ! But you will need to compile it yourself though...
 
 > [Create a new issue](https://github.com/ThomasByr/discord-compiler-bot/issues/new)
 
@@ -94,35 +94,11 @@ This project is licensed under the GPL-3.0 new or revised license. Please read t
 
 THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-## 🔄 Changelog
+## 🔄 Changelog and contributing
 
 Please read the [changelog](changelog.md) file for the full history !
 
-<div class="x-scrollable">
-<div style="width: 3800px;">
-
-```mermaid
-%%{init: { 'logLevel': 'debug', 'theme': 'dark' } }%%
-
-gantt
-title My Coding Journey
-dateFormat YYYY-MM-DD
-
-    section source Code (v0.1)
-    patch 0   : 2022-04-18, 1d
-    patch 1   :             1d
-    patch 2   : 2022-04-30, 2d
-    patch 3   :             1d
-    patch 4   : 2022-06-18, 3d
-    patch 5   : 2022-06-30, 3d
-
-    section Production release
-    crates.io : 2022-04-18, 0d
-
-```
-
-</div>
-</div>
+If you ever want to contribute to this project, either request the contributor status, or, more manually, fork the repo and make a full request ! On a more generic note, please do respect the [Rust Coding Conventions](https://rustc-dev-guide.rust-lang.org/conventions.html) and wait for your PR to be reviewed. Make sure you respect and read the [contributing](.github/CONTRIBUTING.md) guideline, make pull requests and be kind.
 
 <details>
     <summary>  Beta first minor release (click here to expand) </summary>
@@ -187,7 +163,3 @@ dateFormat YYYY-MM-DD
 - ~~`;botinfo` command not working~~ (v0.1.0)
 - ~~total number of servers joined always showing 0~~ (v0.1.1)
 - ~~debug commands not showing up in console (might be linked to previous bug)~~ (v0.1.1)
-
-```
-
-```
