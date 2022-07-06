@@ -15,6 +15,8 @@ use serenity::client::Context;
 use serenity::framework::standard::CommandResult;
 use tokio::sync::MutexGuard;
 
+use std::fmt::Write as _;
+
 pub fn build_menu_items(
     items: Vec<String>,
     items_per_page: usize,
@@ -39,11 +41,18 @@ pub fn build_menu_items(
             if i > items_per_page {
                 break;
             }
-            description.push_str(&format!(
-                "**{}**) {}\n",
+            // description.push_str(&format!(
+            //     "**{}**) {}\n",
+            //     current_page * items_per_page + i + 1,
+            //     item
+            // ))
+            writeln!(
+                description,
+                "**{}**) {}",
                 current_page * items_per_page + i + 1,
                 item
-            ))
+            )
+            .unwrap();
         }
         emb.color(COLOR_OKAY);
         emb.title(title);
@@ -200,7 +209,11 @@ pub async fn handle_edit_asm(
 }
 
 pub fn is_success_embed(embed: &CreateEmbed) -> bool {
-    embed.0.get("color").unwrap() == COLOR_OKAY
+    if let Some(color) = embed.0.get("color") {
+        color == COLOR_OKAY
+    } else {
+        false
+    }
 }
 
 pub async fn send_completion_react(

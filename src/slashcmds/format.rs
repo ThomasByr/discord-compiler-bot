@@ -18,14 +18,6 @@ pub async fn format(ctx: &Context, command: &ApplicationCommandInteraction) -> C
     let mut msg = None;
     let mut parse_result = ParserResult::default();
 
-    // for (_, value) in &command.data.resolved.messages {
-    //     if !parser::find_code_block(&mut parse_result, &value.content, &command.user).await? {
-    //         return Err(CommandError::from("Unable to find a codeblock to format!"));
-    //     }
-    //     msg = Some(value);
-    //     break;
-    // }
-
     if let Some((_, value)) = command.data.resolved.messages.iter().next() {
         if !parser::find_code_block(&mut parse_result, &value.content, &command.user).await? {
             return Err(CommandError::from("Unable to find a codeblock to format!"));
@@ -35,11 +27,15 @@ pub async fn format(ctx: &Context, command: &ApplicationCommandInteraction) -> C
 
     let data = ctx.data.read().await;
     let comp_mgr = data.get::<CompilerCache>().unwrap().read().await;
-    let gbolt = &comp_mgr.gbolt;
+    if comp_mgr.gbolt.is_none() {
+        return Err(CommandError::from(
+            "Compiler Explorer service is currently down, please try again later.",
+        ));
+    }
 
     command
         .create_interaction_response(&ctx.http, |response| {
-            create_formats_interaction(response, &gbolt.formats)
+            create_formats_interaction(response, &comp_mgr.gbolt.as_ref().unwrap().formats)
         })
         .await?;
 
@@ -74,7 +70,10 @@ pub async fn format(ctx: &Context, command: &ApplicationCommandInteraction) -> C
         return Ok(());
     }
 
-    let styles = &gbolt
+    let styles = &comp_mgr
+        .gbolt
+        .as_ref()
+        .unwrap()
         .formats
         .iter()
         .find(|p| p.format_type == formatter)
@@ -92,7 +91,7 @@ pub async fn format(ctx: &Context, command: &ApplicationCommandInteraction) -> C
         .timeout(Duration::from_secs(30));
     cic = cib.build();
     selected = false;
-    let mut style = String::from("Google");
+    let mut style = String::from("WebKit");
     while let Some(interaction) = &cic.next().await {
         match interaction.data.custom_id.as_str() {
             "style" => {
@@ -173,7 +172,7 @@ fn create_styles_interaction<'a>(
                     for style in styles {
                         opts.create_option(|opt| {
                             opt.label(style).value(style);
-                            if style == "Google" {
+                            if style == "WebKit" {
                                 opt.default_selection(true);
                             }
                             opt

@@ -13,6 +13,8 @@ use crate::{
     utls::parser::ParserResult,
 };
 
+use std::fmt::Write as _;
+
 pub async fn diff(ctx: &Context, msg: &ApplicationCommandInteraction) -> CommandResult {
     let message1 = msg
         .data
@@ -117,7 +119,8 @@ pub fn run_diff(first: &str, second: &str) -> String {
             ChangeTag::Insert => "+",
             ChangeTag::Equal => " ",
         };
-        output.push_str(&format!("{}{}", sign, change));
+        // output.push_str(&format!("{}{}", sign, change));
+        writeln!(output, "{}{}", sign, change).unwrap();
     }
     output
 }
