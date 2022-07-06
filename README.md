@@ -45,7 +45,8 @@ int main(int argc, char** argv) {
 
 ## ✏️ In short
 
-First, this project was done in a week so do not expect crazy behavior and be immune to bugs.
+> **Note**
+> This project was done in a week so do not expect crazy behavior and be immune to bugs.
 
 This is a Discord compiler bot which can compile / interpret code blocks and display the result. Keep in mind that we're working in discord. This means, of course, that we have many operating restraints. Here's a few of the big ones.
 
