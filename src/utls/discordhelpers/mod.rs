@@ -243,7 +243,7 @@ pub async fn send_completion_react(
     } else {
         reaction = ReactionType::Unicode(String::from("❌"));
     }
-    return msg.react(&ctx.http, reaction).await;
+    msg.react(&ctx.http, reaction).await
 }
 
 // Certain compiler outputs use unicode control characters that
@@ -273,7 +273,7 @@ pub fn conform_external_str(input: &str, max_len: usize) -> String {
 }
 
 pub async fn manual_dispatch(http: Arc<Http>, id: u64, emb: CreateEmbed) {
-    match serenity::model::id::ChannelId(id)
+    if let Err(e) = serenity::model::id::ChannelId(id)
         .send_message(&http, |m| {
             m.embed(|mut e| {
                 e.0 = emb.0;
@@ -282,9 +282,8 @@ pub async fn manual_dispatch(http: Arc<Http>, id: u64, emb: CreateEmbed) {
         })
         .await
     {
-        Ok(m) => m,
-        Err(e) => return error!("Unable to dispatch manually: {}", e),
-    };
+        error!("Unable to dispatch manually: {}", e);
+    }
 }
 
 pub async fn send_global_presence(shard_manager: &MutexGuard<'_, ShardManager>, sum: u64) {
