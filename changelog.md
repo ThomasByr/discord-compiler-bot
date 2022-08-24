@@ -35,3 +35,15 @@
 - new `diff` slash command with colored output
 - boilerplate code for php
 - pinned serenity dependency to 0.11.1 to avoid headaches
+
+**v0.1.4** hotfix
+
+- compilation service unavailable
+
+**v0.1.5** online services
+
+- assume some service won't work
+- unwrap leading to panic
+- if api don't return status, assume we failed
+- throw more compilation info in footer
+- cared about performance for once

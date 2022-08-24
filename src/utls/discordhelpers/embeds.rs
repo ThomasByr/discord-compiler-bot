@@ -1,3 +1,4 @@
+use std::fmt::Write as _;
 use std::str;
 
 use serenity::{
@@ -11,12 +12,28 @@ use wandbox::*;
 use crate::utls::constants::*;
 use crate::utls::discordhelpers;
 
-pub trait ToEmbed<T> {
-    fn to_embed(self, author: &User, any: T) -> CreateEmbed;
+#[derive(Default)]
+pub struct EmbedOptions {
+    pub is_assembly: bool,
+    pub lang: String,
+    pub compiler: String,
+}
+impl EmbedOptions {
+    pub fn new(is_assembly: bool, lang: String, compiler: String) -> Self {
+        EmbedOptions {
+            is_assembly,
+            lang,
+            compiler,
+        }
+    }
 }
 
-impl ToEmbed<bool> for wandbox::CompilationResult {
-    fn to_embed(self, author: &User, _: bool) -> CreateEmbed {
+pub trait ToEmbed {
+    fn to_embed(self, author: &User, options: &EmbedOptions) -> CreateEmbed;
+}
+
+impl ToEmbed for wandbox::CompilationResult {
+    fn to_embed(self, author: &User, options: &EmbedOptions) -> CreateEmbed {
         let mut embed = CreateEmbed::default();
 
         if !self.status.is_empty() {
@@ -46,13 +63,25 @@ impl ToEmbed<bool> for wandbox::CompilationResult {
             embed.field("URL", &self.url, false);
         }
 
-        embed.footer(|f| f.text(format!("{} | NVidia", author.tag())));
+        embed.footer(|f| {
+            let mut text = author.tag();
+
+            if !options.lang.is_empty() {
+                text = format!("{} | {}", text, options.lang);
+            }
+            if !options.compiler.is_empty() {
+                text = format!("{} | {}", text, options.compiler);
+            }
+
+            text = format!("{} | wandbox.org", text);
+            f.text(text)
+        });
         embed
     }
 }
 
-impl ToEmbed<bool> for godbolt::GodboltResponse {
-    fn to_embed(self, author: &User, assembly: bool) -> CreateEmbed {
+impl ToEmbed for godbolt::GodboltResponse {
+    fn to_embed(self, author: &User, options: &EmbedOptions) -> CreateEmbed {
         let mut embed = CreateEmbed::default();
 
         if self.code == 0 {
@@ -61,7 +90,7 @@ impl ToEmbed<bool> for godbolt::GodboltResponse {
             embed.color(COLOR_FAIL);
 
             // if it's an assembly request let's just handle the error case here.
-            if assembly {
+            if options.is_assembly {
                 let mut errs = String::new();
                 for err_res in &self.stderr {
                     let line = format!("{}\n", &err_res.text);
@@ -78,7 +107,7 @@ impl ToEmbed<bool> for godbolt::GodboltResponse {
             }
         };
 
-        if assembly {
+        if options.is_assembly {
             let mut pieces: Vec<String> = Vec::new();
             let mut append: String = String::new();
             if let Some(vec) = &self.asm {
@@ -88,7 +117,8 @@ impl ToEmbed<bool> for godbolt::GodboltResponse {
                             pieces.push(append.clone());
                             append.clear()
                         }
-                        append.push_str(&format!("{}\n", text));
+                        // append.push_str(&format!("{}\n", text));
+                        writeln!(append, "{}", text).unwrap();
                     }
                 }
             }
@@ -107,6 +137,7 @@ impl ToEmbed<bool> for godbolt::GodboltResponse {
                 } else {
                     String::from("Assembly Output")
                 };
+
                 embed.field(&title, format!("```x86asm\n{}\n```", &append), false);
                 output = true;
             }
@@ -118,17 +149,20 @@ impl ToEmbed<bool> for godbolt::GodboltResponse {
         } else {
             let mut output = String::default();
             for line in &self.stdout {
-                output.push_str(&format!("{}\n", line.text));
+                // output.push_str(&format!("{}\n", line.text));
+                writeln!(output, "{}", line.text).unwrap();
             }
 
             let mut errs = String::default();
             if let Some(errors) = self.build_result.unwrap().stderr {
                 for line in errors {
-                    errs.push_str(&format!("{}\n", line.text));
+                    // errs.push_str(&format!("{}\n", line.text));
+                    writeln!(errs, "{}", line.text).unwrap();
                 }
             }
             for line in &self.stderr {
-                errs.push_str(&format!("{}\n", line.text));
+                // errs.push_str(&format!("{}\n", line.text));
+                writeln!(errs, "{}", line.text).unwrap();
             }
 
             let stdout = output.trim();
@@ -155,12 +189,18 @@ impl ToEmbed<bool> for godbolt::GodboltResponse {
             //embed.field("Execution Time", format!("`{}ms`", self.execution_time), true);
         }
 
-        let mut appendstr = String::default();
+        let mut appendstr = author.tag();
         if let Some(time) = self.execution_time {
-            appendstr = format!(" | {} ms", time);
+            appendstr = format!("{} | {}ms", appendstr, time);
+        }
+        if !options.lang.is_empty() {
+            appendstr = format!("{} | {}", appendstr, options.lang);
+        }
+        if !options.compiler.is_empty() {
+            appendstr = format!("{} | {}", appendstr, options.compiler);
         }
 
-        embed.footer(|f| f.text(format!("{} | Azure{}", author.tag(), appendstr)));
+        embed.footer(|f| f.text(format!("{} | godbolt.org", appendstr)));
         embed
     }
 }
@@ -218,6 +258,13 @@ pub fn build_dblvote_embed(tag: String) -> CreateEmbed {
     embed.color(COLOR_OKAY);
     embed.description(format!("{} voted for us on top.gg!", tag));
     embed.thumbnail(ICON_VOTE);
+    embed
+}
+
+pub fn panic_embed(panic_info: String) -> CreateEmbed {
+    let mut embed = CreateEmbed::default();
+    embed.title("Oopsie");
+    embed.description(format!("```\n{}\n```", panic_info));
     embed
 }
 

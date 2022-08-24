@@ -1,4 +1,5 @@
 use crate::boilerplate::generator::BoilerPlateGenerator;
+use std::fmt::Write as _;
 
 use crate::utls::constants::C_LIKE_MAIN_REGEX;
 
@@ -21,15 +22,17 @@ impl BoilerPlateGenerator for CGenerator {
         let lines = self.input.split('\n');
         for line in lines {
             let trimmed = line.trim();
-            if trimmed.starts_with("using") || trimmed.starts_with("#i") {
-                header.push_str(&format!("{}\n", trimmed));
+            if trimmed.starts_with("#i") || trimmed.starts_with("#d") {
+                // header.push_str(&format!("{}\n", trimmed));
+                writeln!(header, "{}", trimmed).unwrap();
             } else {
-                main_body.push_str(&format!("{}\n", trimmed))
+                // main_body.push_str(&format!("{}\n", trimmed));
+                writeln!(main_body, "{}", trimmed).unwrap();
             }
         }
 
-        if main_body.contains("printf") && header.contains("stdio.h") {
-            header.push_str("include <stdio.h>")
+        if main_body.contains("printf") && !header.contains("stdio.h") {
+            header.push_str("#include <stdio.h>")
         }
         format!("{}\nint main(void) {{\n{}return 0;\n}}", header, main_body)
     }

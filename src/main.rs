@@ -31,6 +31,9 @@ use crate::commands::{
     invite::*, languages::*, ping::*, unblock::*,
 };
 
+use crate::utls::discordhelpers::embeds::panic_embed;
+use crate::utls::discordhelpers::manual_dispatch;
+
 #[group]
 #[commands(
     botinfo, compile, languages, compilers, ping, help, asm, block, unblock, invite, cpp, formats,
@@ -115,6 +118,21 @@ async fn main() -> Result<(), Box<dyn Error>> {
         client.shard_manager.clone(),
     )
     .await?;
+
+    if let Ok(plog) = env::var("PANIC_LOG") {
+        let default_panic = std::panic::take_hook();
+        let http = client.cache_and_http.http.clone();
+
+        std::panic::set_hook(Box::new(move |info| {
+            tokio::spawn({
+                let http = http.clone();
+                let plog_parse = plog.parse::<u64>().unwrap();
+                let panic_str = info.to_string();
+                async move { manual_dispatch(http, plog_parse, panic_embed(panic_str)).await }
+            });
+            default_panic(info);
+        }));
+    }
 
     let dbl = BotsListApi::new();
     if dbl.should_spawn() {

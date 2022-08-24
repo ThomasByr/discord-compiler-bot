@@ -11,7 +11,7 @@ use std::io::Write;
 #[command]
 pub async fn format(ctx: &Context, msg: &Message, mut args: Args) -> CommandResult {
     let mut fmt = String::from("clangformat");
-    let mut style = String::from("google");
+    let mut style = String::from("webkit");
     if !args.is_empty() {
         // do not include ``` codeblocks into arg parsing.. lets just substr and replace args
         let idx = msg.content.find('`');
@@ -34,7 +34,13 @@ pub async fn format(ctx: &Context, msg: &Message, mut args: Args) -> CommandResu
 
     let data = ctx.data.read().await;
     let comp_mgr = data.get::<CompilerCache>().unwrap().read().await;
-    let gbolt = &comp_mgr.gbolt;
+    if comp_mgr.gbolt.is_none() {
+        return Err(CommandError::from(
+            "Compiler Explorer service is currently down, please try again later.",
+        ));
+    }
+
+    let gbolt = comp_mgr.gbolt.as_ref().unwrap();
 
     // validate user input
     for format in &gbolt.formats {
@@ -123,14 +129,18 @@ pub async fn format(ctx: &Context, msg: &Message, mut args: Args) -> CommandResu
 
         msg.channel_id
             .send_message(&ctx.http, |msg| {
-                msg.add_file(path.as_str()).content("Powered by Azure")
+                msg.add_file(path.as_str())
+                    .content("Powered by godbolt.org")
             })
             .await?;
         let _ = std::fs::remove_file(&path);
     } else {
         msg.reply(
             &ctx.http,
-            format!("\n```{}\n{}```\n*Powered by Azure*", lang_code, answer),
+            format!(
+                "\n```{}\n{}```\n*Powered by godbolt.org*",
+                lang_code, answer
+            ),
         )
         .await?;
     }
