@@ -148,7 +148,7 @@ impl CompilationManager {
         let resolution_result = gbolt.resolve(target);
         match resolution_result {
             None => {
-                Err(CommandError::from(format!("Target '{}' either does not produce assembly or is not currently supported on godbolt.org", target)))
+                Err(CommandError::from(format!("Target '{}' either does not produce assembly or is not currently supported on MS Azure", target)))
             }
             Some(compiler) => {
                 let response = Godbolt::send_request(&compiler, &parse_result.code, options, USER_AGENT).await?;

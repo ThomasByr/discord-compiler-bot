@@ -91,7 +91,7 @@ pub async fn format(ctx: &Context, command: &ApplicationCommandInteraction) -> C
         .timeout(Duration::from_secs(30));
     cic = cib.build();
     selected = false;
-    let mut style = String::from("WebKit");
+    let mut style = String::from("Google");
     while let Some(interaction) = &cic.next().await {
         match interaction.data.custom_id.as_str() {
             "style" => {
@@ -172,7 +172,7 @@ fn create_styles_interaction<'a>(
                     for style in styles {
                         opts.create_option(|opt| {
                             opt.label(style).value(style);
-                            if style == "WebKit" {
+                            if style == "Google" {
                                 opt.default_selection(true);
                             }
                             opt

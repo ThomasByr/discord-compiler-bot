@@ -73,7 +73,7 @@ impl ToEmbed for wandbox::CompilationResult {
                 text = format!("{} | {}", text, options.compiler);
             }
 
-            text = format!("{} | wandbox.org", text);
+            text = format!("{} | CV NSight", text);
             f.text(text)
         });
         embed
@@ -200,7 +200,7 @@ impl ToEmbed for godbolt::GodboltResponse {
             appendstr = format!("{} | {}", appendstr, options.compiler);
         }
 
-        embed.footer(|f| f.text(format!("{} | godbolt.org", appendstr)));
+        embed.footer(|f| f.text(format!("{} | MS Azure", appendstr)));
         embed
     }
 }

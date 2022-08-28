@@ -11,7 +11,7 @@ use std::io::Write;
 #[command]
 pub async fn format(ctx: &Context, msg: &Message, mut args: Args) -> CommandResult {
     let mut fmt = String::from("clangformat");
-    let mut style = String::from("webkit");
+    let mut style = String::from("google");
     if !args.is_empty() {
         // do not include ``` codeblocks into arg parsing.. lets just substr and replace args
         let idx = msg.content.find('`');
@@ -129,18 +129,14 @@ pub async fn format(ctx: &Context, msg: &Message, mut args: Args) -> CommandResu
 
         msg.channel_id
             .send_message(&ctx.http, |msg| {
-                msg.add_file(path.as_str())
-                    .content("Powered by godbolt.org")
+                msg.add_file(path.as_str()).content("Powered by MS Azure")
             })
             .await?;
         let _ = std::fs::remove_file(&path);
     } else {
         msg.reply(
             &ctx.http,
-            format!(
-                "\n```{}\n{}```\n*Powered by godbolt.org*",
-                lang_code, answer
-            ),
+            format!("\n```{}\n{}```\n*Powered by MS Azure*", lang_code, answer),
         )
         .await?;
     }
