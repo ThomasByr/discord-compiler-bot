@@ -1,4 +1,4 @@
-# <img src="assets/code.png" alt="icon" width="3%"/> Discord compiler bot
+# <img src="assets/code.png" alt="icon" width="3%"/> Discord Compiler Bot
 
 [![Linux](https://svgshare.com/i/Zhy.svg)](https://docs.microsoft.com/en-us/windows/wsl/tutorials/gui-apps)
 [![Windows](https://svgshare.com/i/ZhY.svg)](https://svgshare.com/i/ZhY.svg)
@@ -14,23 +14,29 @@
 [![Author](https://img.shields.io/badge/author-@ThomasByr-blue)](https://github.com/ThomasByr)
 
 ````txt
-;compile c++ -O3 -Wall -Wextra -Werror -Wpedantic
+;compile rust
 argv1 argv2 argv3
 ```
-stdin1 on the first line
-stdin2 on the second line
+stdin1
+stdin2
+stdin3
 ```
-```cpp
-#include <iostream>
-#include <string>
+```rs
+fn main() -> Result<(), Box<dyn std::error::Error>> {
+    let args: Vec<String> = std::env::args().collect();
 
-int main(int argc, char** argv) {
-    (void)argc;
-    std::string str;
-    std::getline(std::cin, str);
-    std::cout << str << "\n"
-              << argv[1] << std::endl;
-    return EXIT_SUCCESS;
+    let query = &args.get(1).expect("command line argument missing");
+
+    let mut input = String::new();
+    std::io::stdin().read_line(&mut input)?;
+    let input = input.trim();
+
+    println!(
+        "first command line argument: {}\nfirst input line: {}",
+        query, input
+    );
+
+    Ok(())
 }
 ```
 ````
@@ -46,7 +52,7 @@ int main(int argc, char** argv) {
 ## ✏️ In short
 
 > **Note**
-> This project was done in a week so do not expect crazy behavior and be immune to bugs.
+> This project was initially done in a week so do not expect crazy behavior and be immune to bugs.
 
 This is a Discord compiler bot which can compile / interpret code blocks and display the result. Keep in mind that we're working in discord. This means, of course, that we have many operating restraints. Here's a few of the big ones.
 
@@ -102,51 +108,12 @@ Please read the [changelog](changelog.md) file for the full history !
 If you ever want to contribute to this project, either request the contributor status, or, more manually, fork the repo and make a full request ! On a more generic note, please do respect the [Rust Coding Conventions](https://rustc-dev-guide.rust-lang.org/conventions.html) and wait for your PR to be reviewed. Make sure you respect and read the [contributing](.github/CONTRIBUTING.md) guideline, make pull requests and be kind.
 
 <details>
-    <summary>  Beta first minor release (click here to expand) </summary>
+    <summary>  First stable release version (click here to expand) </summary>
 
-**v0.1.0** first release
+**v1.0** unwrapping
 
-- support for 30 more languages
-- asm output
-- embedded messages for discord
-- `;invite`, `;botinfo` commands
-- icons are now found online
-
-**v0.1.1** first patch
-
-- locked serenity dependency version to v0.11
-- client now has privileged access to context
-- fix argument endpoint detection on replies
-
-**v0.1.2** code cleaning and slash commands
-
-- integration of some easy slash commands
-- app commands to compile, format and make assembly
-- cargo clippy to help keep the code cleaner
-- deactivated local execution for some guilds
-- `;block` and `;unblock` commands working (blacklist)
-- added boilerplate code for some languages
-
-**v0.1.3** local rights and corrections
-
-- patched boilerplate code gen for java
-- c detached from c++ boilerplate
-- created alternate server count
-- new `diff` slash command with colored output
-- boilerplate code for php
-- pinned serenity dependency to 0.11.1 to avoid headaches
-
-**v0.1.4** hotfix
-
-- compilation service unavailable
-
-**v0.1.5** online services
-
-- assume some service won't work
-- unwrap leading to panic
-- if api don't return status, assume we failed
-- throw more compilation info in footer
-- cared about performance for once
+- strongest cargo clippy analysis
+- fixed some `panic!` on `.unwrap()`
 
 </details>
 
