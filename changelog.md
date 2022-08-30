@@ -47,3 +47,10 @@
 - if api don't return status, assume we failed
 - throw more compilation info in footer
 - cared about performance for once
+
+## First stable release version
+
+**v1.0** unwrapping
+
+- strongest cargo clippy analysis
+- fixed some `panic!` on `.unwrap()`
