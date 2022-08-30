@@ -1,3 +1,5 @@
+use std::env;
+
 use serenity::{
     async_trait,
     collector::CollectReaction,
@@ -31,25 +33,13 @@ pub struct Handler; // event handler for serenity
 
 #[async_trait]
 trait ShardsReadyHandler {
-    async fn all_shards_ready(
-        &self,
-        ctx: &Context,
-        stats: &mut MutexGuard<'_, StatsManager>,
-        ready: &Ready,
-    );
+    async fn all_shards_ready(&self, ctx: &Context, stats: &mut MutexGuard<'_, StatsManager>);
 }
 
 #[async_trait]
 impl ShardsReadyHandler for Handler {
-    async fn all_shards_ready(
-        &self,
-        ctx: &Context,
-        stats: &mut MutexGuard<'_, StatsManager>,
-        ready: &Ready,
-    ) {
+    async fn all_shards_ready(&self, ctx: &Context, stats: &mut MutexGuard<'_, StatsManager>) {
         let data = ctx.data.read().await;
-        let mut info = data.get::<ConfigCache>().unwrap().write().await;
-        info.insert("BOT_AVATAR", ready.user.avatar_url().unwrap());
 
         let shard_manager = data.get::<ShardManagerCache>().unwrap().lock().await;
         let guild_count = stats.get_boot_vec_sum();
@@ -206,9 +196,11 @@ impl EventHandler for Handler {
                         .await;
                     let _ = new_message.delete_reactions(&ctx.http).await;
                     if collector.is_some() {
+                        let prefix =
+                            env::var("BOT_PREFIX").expect("Expected bot prefix in .env file");
                         let emb = match handle_request(
                             ctx.clone(),
-                            format!(";compile\n```{}\n{}\n```", language, code),
+                            format!("{}compile\n```{}\n{}\n```", prefix, language, code),
                             new_message.author.clone(),
                             &new_message,
                         )
@@ -301,8 +293,14 @@ impl EventHandler for Handler {
             let guild_count = ready.guilds.len() as u64;
             stats.add_shard(guild_count);
 
+            // insert avatar at first opportunity
+            if stats.shard_count() == 1 {
+                let mut info = data.get::<ConfigCache>().unwrap().write().await;
+                info.insert("BOT_AVATAR", ready.user.avatar_url().unwrap());
+            }
+
             if stats.shard_count() == total_shards_to_spawn {
-                self.all_shards_ready(&ctx, &mut stats, &ready).await;
+                self.all_shards_ready(&ctx, &mut stats).await;
             }
         }
     }
