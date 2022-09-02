@@ -222,11 +222,11 @@ pub async fn send_completion_react(
     success: bool,
 ) -> Result<Reaction, serenity::Error> {
     let reaction;
-    if success {
-        {
-            let data = ctx.data.read().await;
-            let botinfo_lock = data.get::<ConfigCache>().unwrap();
-            let botinfo = botinfo_lock.read().await;
+    let data = ctx.data.read().await;
+    let botinfo_lock = data.get::<ConfigCache>().unwrap();
+    let botinfo = botinfo_lock.read().await;
+    match success {
+        true => {
             if let Some(success_id) = botinfo.get("SUCCESS_EMOJI_ID") {
                 let success_name = botinfo
                     .get("SUCCESS_EMOJI_NAME")
@@ -240,8 +240,18 @@ pub async fn send_completion_react(
                 reaction = ReactionType::Unicode(String::from("✅"));
             }
         }
-    } else {
-        reaction = ReactionType::Unicode(String::from("❌"));
+        false => {
+            if let Some(fail_id) = botinfo.get("FAIL_EMOJI_ID") {
+                let fail_name = botinfo
+                    .get("FAIL_EMOJI_NAME")
+                    .expect("Unable to find fail emoji name")
+                    .clone();
+                reaction =
+                    discordhelpers::build_reaction(fail_id.parse::<u64>().unwrap(), &fail_name);
+            } else {
+                reaction = ReactionType::Unicode(String::from("❌"));
+            }
+        }
     }
     msg.react(&ctx.http, reaction).await
 }
