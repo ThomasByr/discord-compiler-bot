@@ -418,6 +418,8 @@ pub async fn dispatch_error(ctx: &Context, msg: &Message, error: DispatchError, 
             .send_message(&ctx.http, |_| &mut emb_msg)
             .await
             .is_err()
-        {}
+        {
+            panic!("Failed to send ratelimit message");
+        }
     }
 }
