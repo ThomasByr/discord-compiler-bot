@@ -25,6 +25,9 @@ src/                        #  Our source folder
 ├── apis/                   #  The home of any involved API integration
 │   └──dbl.rs               ## top.gg's webhook logic
 │
+├── boilerplate/            #  Module containing some boilerplate code geneeration
+│   └──...
+│
 └── utls/                   # Module with random utilities to be used throughout the project
     ├── discordhelpers/     # Module with some discord shortcuts to help keep the project clean
     │   ├── mod.rs          ## Menu handlers & other commonly used functions
