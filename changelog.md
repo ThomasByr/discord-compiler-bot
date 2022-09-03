@@ -54,3 +54,5 @@
 
 - strongest cargo clippy analysis
 - fixed some `panic!` on `.unwrap()`
+- support for custom fail emoji
+- the bot now uses 75B less ram on average
