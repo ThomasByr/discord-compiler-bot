@@ -126,8 +126,8 @@ pub async fn fill(
         "FAIL_EMOJI_NAME",
         "LOADING_EMOJI_ID",
         "LOADING_EMOJI_NAME",
-        "LOGO_EMOJI_NAME",
         "LOGO_EMOJI_ID",
+        "LOGO_EMOJI_NAME",
     ];
     for id in &emoji_identifiers {
         if let Ok(envvar) = env::var(id) {
