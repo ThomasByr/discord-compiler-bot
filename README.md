@@ -117,6 +117,10 @@ If you ever want to contribute to this project, either request the contributor s
 - support for custom fail emoji
 - the bot now uses 75B less ram on average
 
+**v1.1** swaps
+
+- rewrote [CONTRIBUTING.md](.github/CONTRIBUTING.md)
+
 </details>
 
 ## 🐛 Bugs and TODO
