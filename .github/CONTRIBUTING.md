@@ -17,7 +17,7 @@ Any behavior that fails to meet these core values will result in your issue or p
 
 ## Pull Requests
 
-Pull requests to fix issues or add new features are greatly appreciated, but having to outright reject contributions due to them being "not a good fit" is something we don't like to do. We ask that you coordinate changes with us to prevent any wasted time, as your time is valuable. The best place to get in contact with us is in our [support guild](discord.gg/ExraTaJ).
+Pull requests to fix issues or add new features are greatly appreciated, but having to outright reject contributions due to them being "not a good fit" is something we don't like to do. We ask that you coordinate changes with us to prevent any wasted time, as your time is valuable.
 
 ## Rejection
 
@@ -55,24 +55,35 @@ If you're looking for something - here's a breakdown of our codebase
 
 ```
 src/                        #  Our source folder
+├── build.rs                #  Build script to embed git hash for ;botinfo commmand
+|
 ├── main.rs                 #  Code entry point, command registration, and client spawning
 │
 ├── cache.rs                #  Sets up the cache to be used for the bot's resources
 │
 ├── events.rs               #  All discord event handlers excluding command callbacks
 │
-├── apis/                   #  The home of any involved API integration
-│   └── dbl.rs              ## Discord bot's list webhook logic
-│
-├── commands/               #  Module containing all of our command logic
+├── commands/               #  Module containing all of our command's logic
 │   └── ...
 │
-├── stats/                  #  Module containing all statistics tracking logic
-│   ├── stats.rs            ## StatsManager abstraction for common code paths
+├── managers/               #  Module containing all statistics tracking logic
+│   ├── compilation.rs      ## StatsManager abstraction for common code paths
+│   └── stats.rs            ## Manager used to handle all interactons with stats/tracking
+│
+├── stats/                  #  Module containing all statistics tracking structures
 │   └── structures.rs       ## Stats request models & request dispatch
 │
-└── utls/                   #  Module with random utilities to be used throughout the project
+├── apis/                   #  The home of any involved API integration
+│   └──dbl.rs               ## top.gg's webhook logic
+│
+├── boilerplate/            #  Module containing some boilerplate code geneeration
+│   └──...
+│
+└── utls/                   # Module with random utilities to be used throughout the project
+    ├── discordhelpers/     # Module with some discord shortcuts to help keep the project clean
+    │   ├── mod.rs          ## Menu handlers & other commonly used functions
+    │   └── embeds.rs       ## Tools that builds our outputs & prepares them for display
+    ├── blocklist.rs        ## Our blocklisting strategy to preven abuse
     ├── constants.rs        ## Constants
-    ├── discordhelpers.rs   ## Embed builders, menu builders, general tools to be used
     └── parser.rs           ## Compile/Asm command parsing logic
 ```
