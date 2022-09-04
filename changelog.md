@@ -56,3 +56,7 @@
 - fixed some `panic!` on `.unwrap()`
 - support for custom fail emoji
 - the bot now uses 75B less ram on average
+
+**v1.1** swaps
+
+- rewrote [CONTRIBUTING.md](.github/CONTRIBUTING.md)
