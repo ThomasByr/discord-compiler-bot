@@ -120,6 +120,7 @@ If you ever want to contribute to this project, either request the contributor s
 **v1.1** swaps
 
 - rewrote [CONTRIBUTING.md](.github/CONTRIBUTING.md)
+- rules for background runner > .log
 
 </details>
 
