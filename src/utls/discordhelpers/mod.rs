@@ -306,7 +306,7 @@ pub async fn send_global_presence(shard_manager: &MutexGuard<'_, ShardManager>, 
     };
 
     // update shard guild count & presence
-    let presence_str = format!("in {} servers | ;help", server_count);
+    let presence_str = format!("in {} guilds | ;help", server_count);
 
     let runners = shard_manager.runners.lock().await;
     for (_, v) in runners.iter() {
