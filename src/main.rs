@@ -126,7 +126,9 @@ async fn main() -> Result<(), Box<dyn Error>> {
         std::panic::set_hook(Box::new(move |info| {
             tokio::spawn({
                 let http = http.clone();
-                let plog_parse = plog.parse::<u64>().unwrap();
+                let plog_parse = plog.parse::<u64>().unwrap_or_else(|_| {
+                    panic!("Unable to parse panic log channel id: {}", plog);
+                });
                 let panic_str = info.to_string();
                 async move { manual_dispatch(http, plog_parse, panic_embed(panic_str)).await }
             });

@@ -74,10 +74,9 @@ pub fn build_menu_items(
     pages
 }
 
-// Pandas#3**2 on serenity disc, tyty
 pub fn build_reaction(emoji_id: u64, emoji_name: &str) -> ReactionType {
     ReactionType::Custom {
-        animated: false,
+        animated: false, // todo: Make this configurable
         id: EmojiId::from(emoji_id),
         name: Some(String::from(emoji_name)),
     }
