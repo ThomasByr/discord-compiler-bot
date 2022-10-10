@@ -32,7 +32,7 @@ impl BoilerPlateGenerator for JavaGenerator {
         }
 
         format!(
-            "{}\nclass Main{{\npublic static void main(String[] args) {{\n{}}}}}",
+            "{}\nclass Main{{\npublic static void main(String[] args) throws Exception {{\n{}}}}}",
             header, main_body
         )
     }
