@@ -1,4 +1,4 @@
-# <img src="assets/code.png" alt="icon" width="3%"/> Discord Compiler Bot
+# <img src="assets/code.png" alt="icon" width="4%"/> Discord Compiler Bot
 
 [![Linux](https://svgshare.com/i/Zhy.svg)](https://docs.microsoft.com/en-us/windows/wsl/tutorials/gui-apps)
 [![Windows](https://svgshare.com/i/ZhY.svg)](https://svgshare.com/i/ZhY.svg)
@@ -115,12 +115,19 @@ If you ever want to contribute to this project, either request the contributor s
 - strongest cargo clippy analysis
 - fixed some `panic!` on `.unwrap()`
 - support for custom fail emoji
-- the bot now uses 75B less ram on average
+- the bot now uses 75B less ram on average, yay
 
 **v1.1** swaps
 
 - rewrote [CONTRIBUTING.md](.github/CONTRIBUTING.md)
 - rules for background runner > .log
+- TypeScript fix & shorthand `ts`
+- `panic!` hook : prevent invalid panic logs from obfuscating errors
+- rolled back to a lower output length limit
+
+**v1.2** what is more useful when is broken ?
+
+- reworked C and Java boilerplates
 
 </details>
 
