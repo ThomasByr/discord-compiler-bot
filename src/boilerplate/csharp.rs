@@ -33,7 +33,7 @@ impl BoilerPlateGenerator for CSharpGenerator {
 
         // if they included nothing, we can just manually include System since they probably want it
         if header.is_empty() {
-            header.push_str("using System;");
+            header.push_str("using System;\n");
         }
         format!(
             "{}\nnamespace Main{{\nclass Program {{\n static void Main(string[] args) {{\n{}}}}}}}",

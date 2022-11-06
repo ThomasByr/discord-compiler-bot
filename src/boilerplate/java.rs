@@ -33,7 +33,7 @@ impl BoilerPlateGenerator for JavaGenerator {
 
         // if they included nothing, we can just manually include everything
         if !header.contains("import") {
-            header.push_str("import java.util.*;");
+            header.push_str("import java.util.*;\n");
         }
 
         format!(

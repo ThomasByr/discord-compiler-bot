@@ -33,7 +33,7 @@ impl BoilerPlateGenerator for CppGenerator {
 
         // if they included nothing, we can just manually include everything
         if !header.contains("#include") {
-            header.push_str("#include <bits/stdc++.h>");
+            header.push_str("#include <bits/stdc++.h>\n");
         }
         format!("{}\nint main(void) {{\n{}return 0;\n}}", header, main_body)
     }
