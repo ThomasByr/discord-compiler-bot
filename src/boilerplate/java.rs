@@ -31,6 +31,11 @@ impl BoilerPlateGenerator for JavaGenerator {
             }
         }
 
+        // if they included nothing, we can just manually include everything
+        if !header.contains("import") {
+            header.push_str("import java.util.*;");
+        }
+
         format!(
             "{}\nclass Main{{\npublic static void main(String[] args) throws Exception {{\n{}}}}}",
             header, main_body
