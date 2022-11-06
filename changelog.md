@@ -55,9 +55,16 @@
 - strongest cargo clippy analysis
 - fixed some `panic!` on `.unwrap()`
 - support for custom fail emoji
-- the bot now uses 75B less ram on average
+- the bot now uses 75B less ram on average, yay
 
 **v1.1** swaps
 
 - rewrote [CONTRIBUTING.md](.github/CONTRIBUTING.md)
 - rules for background runner > .log
+- TypeScript fix & shorthand `ts`
+- `panic!` hook : prevent invalid panic logs from obfuscating errors
+- rolled back to a lower output length limit
+
+**v1.2** what is more useful when is broken ?
+
+- reworked C and Java boilerplates
