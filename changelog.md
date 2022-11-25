@@ -68,3 +68,5 @@
 **v1.2** what is more useful when is broken ?
 
 - reworked C and Java boilerplates
+- check for existence of builds
+- added `bash` and `sh` aliases for `bash script`
