@@ -154,10 +154,12 @@ impl ToEmbed for godbolt::GodboltResponse {
             }
 
             let mut errs = String::default();
-            if let Some(errors) = self.build_result.unwrap().stderr {
-                for line in errors {
-                    // errs.push_str(&format!("{}\n", line.text));
-                    writeln!(errs, "{}", line.text).unwrap();
+            if let Some(build_result) = self.build_result {
+                if let Some(errors) = build_result.stderr {
+                    for line in errors {
+                        // errs.push_str(&format!("{}\n", line.text));
+                        writeln!(errs, "{}", line.text).unwrap();
+                    }
                 }
             }
             for line in &self.stderr {
