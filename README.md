@@ -128,6 +128,8 @@ If you ever want to contribute to this project, either request the contributor s
 **v1.2** what is more useful when is broken ?
 
 - reworked C and Java boilerplates
+- check for existence of builds
+- added `bash` and `sh` aliases for `bash script`
 
 </details>
 
