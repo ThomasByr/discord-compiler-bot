@@ -70,3 +70,8 @@
 - reworked C and Java boilerplates
 - check for existence of builds
 - added `bash` and `sh` aliases for `bash script`
+
+**v1.3** more languages
+
+- added `c#` and `cs` aliases for `csharp`
+- ... and many more
