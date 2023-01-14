@@ -131,6 +131,11 @@ If you ever want to contribute to this project, either request the contributor s
 - check for existence of builds
 - added `bash` and `sh` aliases for `bash script`
 
+**v1.3** more languages
+
+- added `c#` and `cs` aliases for `csharp`
+- ... and many more
+
 </details>
 
 ## 🐛 Bugs and TODO
