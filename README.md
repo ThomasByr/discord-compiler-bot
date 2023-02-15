@@ -91,7 +91,7 @@ On a side note, support has been added for ARM architectures. Meaning you can no
 
 ## ⚖️ License
 
-This project is licensed under the GPL-3.0 new or revised license. Please read the [LICENSE](LICENSE) file.
+This project is licensed under the AGPL-3.0 new or revised license. Please read the [LICENSE](LICENSE) file.
 
 - Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
 
