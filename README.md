@@ -45,9 +45,11 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 2. [👩‍🏫 Usage](#-usage)
 3. [💁 Get Help](#-get-help)
 4. [🔰 Support](#-support)
-5. [⚖️ License](#️-license)
-6. [🔄 Changelog and contributing](#-changelog-and-contributing)
-7. [🐛 Bugs and TODO](#-bugs-and-todo)
+5. [🧪 Testing](#-testing)
+6. [🧑‍🏫 Contributing](#-contributing)
+7. [⚖️ License](#️-license)
+8. [🔄 Changelog](#-changelog)
+9. [🐛 Bugs and TODO](#-bugs-and-todo)
 
 ## ✏️ In short
 
@@ -89,6 +91,35 @@ On a side note, support has been added for ARM architectures. Meaning you can no
 
 > [Create a new issue](https://github.com/ThomasByr/discord-compiler-bot/issues/new)
 
+## 🧪 Testing
+
+Oh god... please don't.
+
+Still, make sure you have `valgrind` up and ready and then run :
+
+```bash
+cargo test --all
+```
+
+## 🧑‍🏫 Contributing
+
+If you ever want to contribute, either request the contributor status, or, more manually, fork the repo and make a full request !. On a more generic note, please do respect the [Rust Coding Conventions](https://rustc-dev-guide.rust-lang.org/conventions.html) and wait for your PR to be reviewed. Make sure you respect and read the [Contributing Guidelines](.github/CONTRIBUTING.md), make pull requests and be kind.
+
+> The standard procedure is :
+>
+> ```txt
+> fork -> git branch -> push -> pull request
+> ```
+>
+> Note that we won't accept any PR :
+>
+> - that does not follow our Contributing Guidelines
+> - that is not sufficiently commented or isn't well formated
+> - without any proper test suite
+> - with a failing or incomplete test suite
+
+Happy coding ! 🙂
+
 ## ⚖️ License
 
 This project is licensed under the AGPL-3.0 new or revised license. Please read the [LICENSE](LICENSE) file.
@@ -101,11 +132,9 @@ This project is licensed under the AGPL-3.0 new or revised license. Please read 
 
 THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-## 🔄 Changelog and contributing
+## 🔄 Changelog
 
 Please read the [changelog](changelog.md) file for the full history !
-
-If you ever want to contribute to this project, either request the contributor status, or, more manually, fork the repo and make a full request ! On a more generic note, please do respect the [Rust Coding Conventions](https://rustc-dev-guide.rust-lang.org/conventions.html) and wait for your PR to be reviewed. Make sure you respect and read the [contributing](.github/CONTRIBUTING.md) guideline, make pull requests and be kind.
 
 <details>
     <summary>  First stable release version (click here to expand) </summary>
@@ -136,6 +165,11 @@ If you ever want to contribute to this project, either request the contributor s
 - added `c#` and `cs` aliases for `csharp`
 - ... and many more
 
+**v1.4** dependencies
+
+- added `.rustfmt.toml` to enforce a consistent style
+- updated dependencies (notably serenity to `0.11.5`)
+
 </details>
 
 ## 🐛 Bugs and TODO
@@ -152,3 +186,4 @@ If you ever want to contribute to this project, either request the contributor s
 - ~~`;botinfo` command not working~~ (v0.1.0)
 - ~~total number of servers joined always showing 0~~ (v0.1.1)
 - ~~debug commands not showing up in console (might be linked to previous bug)~~ (v0.1.1)
+- some shards are randomly disconnecting
