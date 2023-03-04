@@ -44,8 +44,14 @@ pub async fn formats(ctx: &Context, msg: &Message, _args: Args) -> CommandResult
     emb.field(&format.format_type, &output, false);
   }
 
-  let mut emb_msg = embeds::embed_message(emb);
-  msg.channel_id.send_message(&ctx.http, |_| &mut emb_msg).await?;
+  let emb_msg = embeds::embed_message(emb);
+  msg
+    .channel_id
+    .send_message(&ctx.http, |e| {
+      *e = emb_msg;
+      e
+    })
+    .await?;
 
   return Ok(());
 }

@@ -7,9 +7,10 @@ use godbolt::{Format, Godbolt};
 use serenity::{
   builder::{CreateInteractionResponse, EditInteractionResponse},
   framework::standard::{CommandError, CommandResult},
-  model::interactions::application_command::ApplicationCommandInteraction,
-  model::interactions::message_component::ButtonStyle,
-  model::prelude::*,
+  model::application::component::ButtonStyle,
+  model::application::interaction::application_command::ApplicationCommandInteraction,
+  model::application::interaction::InteractionResponseType,
+  model::application::interaction::MessageFlags,
   prelude::*,
 };
 use std::time::Duration;
@@ -188,33 +189,30 @@ fn create_formats_interaction<'this, 'a>(
 ) -> &'this mut CreateInteractionResponse<'a> {
   response.kind(InteractionResponseType::ChannelMessageWithSource).interaction_response_data(
     |data| {
-      data
-        .content("Select a formatter to use:")
-        .flags(InteractionApplicationCommandCallbackDataFlags::EPHEMERAL)
-        .components(|cmps| {
-          cmps
-            .create_action_row(|row| {
-              row.create_select_menu(|menu| {
-                menu.custom_id("formatter").options(|opts| {
-                  for format in formats {
-                    opts.create_option(|opt| {
-                      opt.label(&format.name).value(&format.format_type).description(&format.exe);
-                      if format.format_type == "clangformat" {
-                        opt.default_selection(true);
-                      }
-                      opt
-                    });
-                  }
-                  opts
-                })
+      data.content("Select a formatter to use:").flags(MessageFlags::EPHEMERAL).components(|cmps| {
+        cmps
+          .create_action_row(|row| {
+            row.create_select_menu(|menu| {
+              menu.custom_id("formatter").options(|opts| {
+                for format in formats {
+                  opts.create_option(|opt| {
+                    opt.label(&format.name).value(&format.format_type).description(&format.exe);
+                    if format.format_type == "clangformat" {
+                      opt.default_selection(true);
+                    }
+                    opt
+                  });
+                }
+                opts
               })
             })
-            .create_action_row(|row| {
-              row.create_button(|btn| {
-                btn.custom_id("select").label("Select").style(ButtonStyle::Primary)
-              })
+          })
+          .create_action_row(|row| {
+            row.create_button(|btn| {
+              btn.custom_id("select").label("Select").style(ButtonStyle::Primary)
             })
-        })
+          })
+      })
     },
   )
 }

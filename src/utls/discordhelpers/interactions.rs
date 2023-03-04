@@ -7,11 +7,11 @@ use serenity::{
   builder::{CreateComponents, CreateEmbed, CreateInteractionResponse, CreateSelectMenuOption},
   client::Context,
   framework::standard::CommandError,
-  model::interactions::application_command::ApplicationCommandInteraction,
-  model::interactions::message_component::{ActionRowComponent, ButtonStyle, InputTextStyle},
-  model::interactions::{InteractionApplicationCommandCallbackDataFlags, InteractionResponseType},
-  model::prelude::message_component::MessageComponentInteraction,
-  model::prelude::modal::ModalSubmitInteraction,
+  model::application::component::{ActionRowComponent, ButtonStyle, InputTextStyle},
+  model::application::interaction::application_command::ApplicationCommandInteraction,
+  model::application::interaction::message_component::MessageComponentInteraction,
+  model::application::interaction::modal::ModalSubmitInteraction,
+  model::application::interaction::{InteractionResponseType, MessageFlags},
 };
 
 use crate::cache::ConfigCache;
@@ -56,7 +56,7 @@ pub async fn create_more_options_panel(
     .create_interaction_response(&ctx.http, |resp| {
       resp.kind(InteractionResponseType::Modal).interaction_response_data(|data| {
         data
-          .flags(InteractionApplicationCommandCallbackDataFlags::EPHEMERAL)
+          .flags(MessageFlags::EPHEMERAL)
           .custom_id("more_options_panel")
           .content("Select a compiler:")
           .title("More options")
@@ -219,25 +219,22 @@ pub fn create_language_interaction<'this, 'a>(
   languages: &[&str],
 ) -> &'this mut CreateInteractionResponse<'a> {
   resp.kind(InteractionResponseType::ChannelMessageWithSource).interaction_response_data(|data| {
-    data
-      .flags(InteractionApplicationCommandCallbackDataFlags::EPHEMERAL)
-      .content("Select a language:")
-      .components(|components| {
-        components.create_action_row(|row| {
-          row.create_select_menu(|menu| {
-            menu.custom_id("language_select").options(|opts| {
-              for language in languages {
-                let mut option = CreateSelectMenuOption::default();
-                option.value(language);
-                option.label(language);
-                opts.add_option(option);
-              }
+    data.flags(MessageFlags::EPHEMERAL).content("Select a language:").components(|components| {
+      components.create_action_row(|row| {
+        row.create_select_menu(|menu| {
+          menu.custom_id("language_select").options(|opts| {
+            for language in languages {
+              let mut option = CreateSelectMenuOption::default();
+              option.value(language);
+              option.label(language);
+              opts.add_option(option);
+            }
 
-              opts
-            })
+            opts
           })
         })
       })
+    })
   })
 }
 
@@ -274,7 +271,7 @@ pub fn create_diff_select_response<'this, 'a>(
 ) -> &'this mut CreateInteractionResponse<'a> {
   resp.kind(InteractionResponseType::ChannelMessageWithSource).interaction_response_data(|data| {
     data
-      .flags(InteractionApplicationCommandCallbackDataFlags::EPHEMERAL)
+      .flags(MessageFlags::EPHEMERAL)
       .embed(|emb| {
         emb
           .color(COLOR_WARN)
@@ -329,7 +326,7 @@ where
   //             .create_interaction_response(&ctx.http, |resp| {
   //                 resp.kind(InteractionResponseType::DeferredChannelMessageWithSource)
   //                     .interaction_response_data(|data| {
-  //                         data.flags(InteractionApplicationCommandCallbackDataFlags::EPHEMERAL)
+  //                         data.flags(MessageFlags::EPHEMERAL)
   //                     })
   //             })
   //             .await?;
@@ -345,9 +342,7 @@ where
         .create_interaction_response(&ctx.http, |resp| {
           resp
             .kind(InteractionResponseType::DeferredChannelMessageWithSource)
-            .interaction_response_data(|data| {
-              data.flags(InteractionApplicationCommandCallbackDataFlags::EPHEMERAL)
-            })
+            .interaction_response_data(|data| data.flags(MessageFlags::EPHEMERAL))
         })
         .await?;
       return Err(CommandError::from("Unable to find a codeblock to compile!"));
@@ -387,7 +382,7 @@ where
             let compile_components = create_compile_panel(options);
 
             data
-              .flags(InteractionApplicationCommandCallbackDataFlags::EPHEMERAL)
+              .flags(MessageFlags::EPHEMERAL)
               .content("Select a compiler:")
               .set_components(compile_components)
           },
