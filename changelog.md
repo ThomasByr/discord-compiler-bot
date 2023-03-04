@@ -75,3 +75,8 @@
 
 - added `c#` and `cs` aliases for `csharp`
 - ... and many more
+
+**v1.4** dependencies
+
+- added `.rustfmt.toml` to enforce a consistent style
+- updated dependencies (notably serenity to `0.11.5`)
