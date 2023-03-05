@@ -129,5 +129,7 @@ pub async fn format(ctx: &Context, msg: &Message, mut args: Args) -> CommandResu
       .reply(&ctx.http, format!("\n```{}\n{}```\n*Powered by MS Azure*", lang_code, answer))
       .await?;
   }
+
+  debug!("Command executed");
   Ok(())
 }

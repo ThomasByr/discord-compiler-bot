@@ -46,5 +46,6 @@ pub async fn formats(ctx: &Context, msg: &Message, _args: Args) -> CommandResult
 
   embeds::dispatch_embed(&ctx.http, msg.channel_id, emb).await?;
 
+  debug!("Command executed");
   return Ok(());
 }

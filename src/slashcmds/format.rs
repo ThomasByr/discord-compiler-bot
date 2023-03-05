@@ -156,6 +156,7 @@ pub async fn format(ctx: &Context, command: &ApplicationCommandInteraction) -> C
     })
     .await?;
 
+  debug!("Command executed");
   Ok(())
 }
 

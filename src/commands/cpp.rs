@@ -29,6 +29,7 @@ pub async fn cpp(ctx: &Context, msg: &Message, _args: Args) -> CommandResult {
   let mut delete_cache = data_read.get::<MessageCache>().unwrap().lock().await;
   delete_cache.insert(msg.id.0, MessageCacheEntry::new(compilation_embed, msg.clone()));
 
+  debug!("Command executed");
   Ok(())
 }
 

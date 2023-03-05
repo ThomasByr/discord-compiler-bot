@@ -19,5 +19,6 @@ pub async fn block(ctx: &Context, msg: &Message, args: Args) -> CommandResult {
   blocklist.block(arg);
 
   msg.channel_id.say(&ctx.http, format!("Blocked snowflake `{}`", &arg)).await?;
+  debug!("Command executed");
   Ok(())
 }
