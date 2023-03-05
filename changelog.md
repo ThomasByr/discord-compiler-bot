@@ -80,3 +80,4 @@
 
 - added `.rustfmt.toml` to enforce a consistent style
 - updated dependencies (notably serenity to `0.11.5`)
+- finally unified embed dispatching
