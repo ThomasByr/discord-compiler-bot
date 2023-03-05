@@ -111,13 +111,8 @@ impl EventHandler for Handler {
       info!("Joining {}", guild.name);
 
       if let Some(system_channel) = guild.system_channel_id {
-        let message = embeds::embed_message(embeds::build_welcome_embed());
-        let _ = system_channel
-          .send_message(&ctx.http, |e| {
-            *e = message;
-            e
-          })
-          .await;
+        let _ =
+          embeds::dispatch_embed(&ctx.http, system_channel, embeds::build_welcome_embed()).await;
       }
     }
   }
@@ -205,30 +200,16 @@ impl EventHandler for Handler {
               Ok(emb) => emb,
               Err(e) => {
                 let emb = embeds::build_fail_embed(&new_message.author, &format!("{}", e));
-                let emb_msg = embeds::embed_message(emb);
-                if let Ok(sent) = new_message
-                  .channel_id
-                  .send_message(&ctx.http, |e| {
-                    *e = emb_msg;
-                    e
-                  })
-                  .await
-                {
+                let sent_fail =
+                  embeds::dispatch_embed(&ctx.http, new_message.channel_id, emb).await;
+                if let Ok(sent) = sent_fail {
                   let mut message_cache = data.get::<MessageCache>().unwrap().lock().await;
                   message_cache.insert(new_message.id.0, MessageCacheEntry::new(sent, new_message));
                 }
                 return;
               }
             };
-            let mut emb_msg = embeds::embed_message(emb);
-            emb_msg.reference_message(&new_message);
-            let _ = new_message
-              .channel_id
-              .send_message(&ctx.http, |e| {
-                *e = emb_msg;
-                e
-              })
-              .await;
+            let _ = embeds::dispatch_embed(&ctx.http, new_message.channel_id, emb).await;
           }
         }
       }
@@ -351,20 +332,11 @@ pub async fn before(ctx: &Context, msg: &Message, _: &str) -> bool {
             If you feel that this has been done in error, request an unban in the support server.",
       );
 
-      let emb_msg = embeds::embed_message(emb);
-      let msg_response = msg
-        .channel_id
-        .send_message(&ctx.http, |e| {
-          *e = emb_msg;
-          e
-        })
-        .await;
-      if msg_response.is_ok() {
-        if author_blocklisted {
-          warn!("Blocked user {} [{}]", msg.author.tag(), msg.author.id.0);
-        } else {
-          warn!("Blocked guild {}", guild_id);
-        }
+      let _ = embeds::dispatch_embed(&ctx.http, msg.channel_id, emb).await;
+      if author_blocklisted {
+        warn!("Blocked user {} [{}]", msg.author.tag(), msg.author.id.0);
+      } else {
+        warn!("Blocked guild {}", guild_id);
       }
       return false;
     }
@@ -384,15 +356,8 @@ pub async fn after(
 
   if let Err(e) = command_result {
     let emb = embeds::build_fail_embed(&msg.author, &format!("{}", e));
-    let emb_msg = embeds::embed_message(emb);
-    if let Ok(sent) = msg
-      .channel_id
-      .send_message(&ctx.http, |e| {
-        *e = emb_msg;
-        e
-      })
-      .await
-    {
+    let sent_fail = embeds::dispatch_embed(&ctx.http, msg.channel_id, emb).await;
+    if let Ok(sent) = sent_fail {
       let mut message_cache = data.get::<MessageCache>().unwrap().lock().await;
       message_cache.insert(msg.id.0, MessageCacheEntry::new(sent, msg.clone()));
     }
@@ -409,13 +374,6 @@ pub async fn after(
 pub async fn dispatch_error(ctx: &Context, msg: &Message, error: DispatchError, _: &str) {
   if let DispatchError::Ratelimited(_) = error {
     let emb = embeds::build_fail_embed(&msg.author, "You are sending requests too fast!");
-    let emb_msg = embeds::embed_message(emb);
-    let _ = msg
-      .channel_id
-      .send_message(&ctx.http, |e| {
-        *e = emb_msg;
-        e
-      })
-      .await;
+    let _ = embeds::dispatch_embed(&ctx.http, msg.channel_id, emb).await;
   }
 }
