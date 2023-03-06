@@ -12,7 +12,6 @@ pub async fn invite(ctx: &Context, msg: &Message, _: Args) -> CommandResult {
 
   let emb = embeds::build_invite_embed(&invite);
   embeds::dispatch_embed(&ctx.http, msg.channel_id, emb).await?;
-
   debug!("Command executed");
   Ok(())
 }

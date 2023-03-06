@@ -66,6 +66,6 @@ async fn eval_output_balance() {
   let mut eval = CppEval::new("{ /* {{{ */ }");
   if let Err(e) = eval.evaluate() {
     println!("{}", e);
-    panic!("Parser failed")
+    panic!("Parser failed.");
   }
 }

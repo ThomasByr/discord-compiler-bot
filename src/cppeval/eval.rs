@@ -63,9 +63,8 @@ impl CppEval {
       let rest = self.input.replacen(&main, "", 1).trim().to_string();
 
       // self.output.push_str(&format!("{}\n", rest));
-      writeln!(self.output, "{}", rest).unwrap();
       // self.output.push_str(&format!("{}\n", main));
-      writeln!(self.output, "{}", main).unwrap();
+      writeln!(self.output, "{}\n{}", rest, main).unwrap();
     } else {
       return Err(EvalError::new("No main() specified. Invalid request"));
     }
@@ -158,6 +157,7 @@ impl CppEval {
     } else {
       self.input.clone()
     };
+
     self.build_main(&format!("cout {};", input));
   }
 

@@ -19,7 +19,7 @@ impl Menu {
     Menu {
       ctx: ctx.clone(),
       msg: msg.clone(),
-      pages: items.to_vec(),
+      pages: Vec::from(items),
       page: 0,
       components: Menu::build_components(),
     }

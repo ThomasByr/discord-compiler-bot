@@ -2,12 +2,15 @@ use std::fmt::Write as _;
 use std::{env, str};
 
 use serenity::http::Http;
+use serenity::model::application::component::ButtonStyle;
 use serenity::{
   builder::{CreateEmbed, CreateMessage},
   client::Context,
   model::prelude::*,
 };
 
+use crate::cache::LinkAPICache;
+use crate::managers::compilation::CompilationDetails;
 use wandbox::*;
 
 use crate::utls::constants::*;
@@ -16,12 +19,12 @@ use crate::utls::discordhelpers;
 #[derive(Default)]
 pub struct EmbedOptions {
   pub is_assembly: bool,
-  pub lang: String,
-  pub compiler: String,
+  pub compilation_info: CompilationDetails,
 }
+
 impl EmbedOptions {
-  pub fn new(is_assembly: bool, lang: String, compiler: String) -> Self {
-    EmbedOptions { is_assembly, lang, compiler }
+  pub fn new(is_assembly: bool, compilation_info: CompilationDetails) -> Self {
+    EmbedOptions { is_assembly, compilation_info }
   }
 }
 
@@ -63,14 +66,14 @@ impl ToEmbed for wandbox::CompilationResult {
     embed.footer(|f| {
       let mut text = author.tag();
 
-      if !options.lang.is_empty() {
-        text = format!("{} | {}", text, options.lang);
+      if !options.compilation_info.language.is_empty() {
+        text = format!("{} | {}", text, options.compilation_info.language);
       }
-      if !options.compiler.is_empty() {
-        text = format!("{} | {}", text, options.compiler);
+      if !options.compilation_info.compiler.is_empty() {
+        text = format!("{} | {}", text, options.compilation_info.compiler);
       }
 
-      text = format!("{} | CV NSight", text);
+      text = format!("{} | wandbox.org", text);
       f.text(text)
     });
     embed
@@ -120,7 +123,7 @@ impl ToEmbed for godbolt::GodboltResponse {
       let mut i = 1;
       for str in pieces {
         let title = format!("Assembly Output Pt. {}", i);
-        // let piece = discordhelpers::conform_external_str(&str, MAX_OUTPUT_LEN);
+
         let piece = str.replace('`', "\u{200B}`");
         embed.field(&title, format!("```x86asm\n{}\n```", &piece), false);
         output = true;
@@ -133,9 +136,8 @@ impl ToEmbed for godbolt::GodboltResponse {
           String::from("Assembly Output")
         };
 
-        // let piece = discordhelpers::conform_external_str(&append, MAX_OUTPUT_LEN);
-        let piece = append.replace('`', "\u{200B}`");
-        embed.field(&title, format!("```x86asm\n{}\n```", &piece), false);
+        let str = append.replace('`', "\u{200B}`");
+        embed.field(&title, format!("```x86asm\n{}\n```", &str), false);
         output = true;
       }
 
@@ -146,7 +148,6 @@ impl ToEmbed for godbolt::GodboltResponse {
     } else {
       let mut output = String::default();
       for line in &self.stdout {
-        // output.push_str(&format!("{}\n", line.text));
         writeln!(output, "{}", line.text).unwrap();
       }
 
@@ -154,13 +155,12 @@ impl ToEmbed for godbolt::GodboltResponse {
       if let Some(build_result) = self.build_result {
         if let Some(errors) = build_result.stderr {
           for line in errors {
-            // errs.push_str(&format!("{}\n", line.text));
             writeln!(errs, "{}", line.text).unwrap();
           }
         }
       }
+
       for line in &self.stderr {
-        // errs.push_str(&format!("{}\n", line.text));
         writeln!(errs, "{}", line.text).unwrap();
       }
 
@@ -192,21 +192,47 @@ impl ToEmbed for godbolt::GodboltResponse {
     if let Some(time) = self.execution_time {
       appendstr = format!("{} | {}ms", appendstr, time);
     }
-    if !options.lang.is_empty() {
-      appendstr = format!("{} | {}", appendstr, options.lang);
+    if !options.compilation_info.language.is_empty() {
+      appendstr = format!("{} | {}", appendstr, options.compilation_info.language);
     }
-    if !options.compiler.is_empty() {
-      appendstr = format!("{} | {}", appendstr, options.compiler);
+    if !options.compilation_info.compiler.is_empty() {
+      appendstr = format!("{} | {}", appendstr, options.compilation_info.compiler);
     }
 
-    embed.footer(|f| f.text(format!("{} | MS Azure", appendstr)));
+    embed.footer(|f| f.text(format!("{} | godbolt.org", appendstr)));
     embed
   }
 }
 
-pub async fn edit_message_embed(ctx: &Context, old: &mut Message, emb: CreateEmbed) {
+pub async fn edit_message_embed(
+  ctx: &Context,
+  old: &mut Message,
+  emb: CreateEmbed,
+  compilation_details: Option<CompilationDetails>,
+) {
+  let mut url = None;
+  if let Some(details) = compilation_details {
+    let data = ctx.data.read().await;
+    if let Some(link_cache) = data.get::<LinkAPICache>() {
+      if let Some(b64) = details.base64 {
+        let long_url = format!("https://godbolt.org/clientstate/{}", b64);
+        let link_cache_lock = link_cache.read().await;
+        url = link_cache_lock.get_link(long_url).await
+      }
+    }
+  }
+
   let _ = old
     .edit(ctx, |m| {
+      if let Some(shorturl) = url {
+        m.components(|cmp| {
+          cmp.create_action_row(|row| {
+            row.create_button(|btn| {
+              btn.style(ButtonStyle::Link).url(shorturl).label("View on godbolt.org")
+            })
+          })
+        });
+      }
       m.embed(|e| {
         e.0 = emb.0;
         e
@@ -233,7 +259,7 @@ pub fn build_small_compilation_embed(author: &User, res: &mut CompilationResult)
     let str = discordhelpers::conform_external_str(&res.program_all, MAX_OUTPUT_LEN);
     embed.description(format!("```\n{}\n```", str));
   }
-  embed.footer(|f| f.text(format!("Requested by: {} | Powered by NVidia", author.tag())));
+  embed.footer(|f| f.text(format!("Requested by: {} | Powered by wandbox.org", author.tag())));
 
   embed
 }
@@ -293,9 +319,11 @@ pub fn build_welcome_embed() -> CreateEmbed {
     format!("{}compile python\n```py\nprint('hello world')\n```", prefix),
     true,
   );
-  embed.field("Learning Time!", "If you like reading the manuals of things, read our [getting started](https://github.com/ThomasByr/discord-compiler-bot/wiki) wiki or if you are confident type `;help` to view all commands.", false);
-  embed.field("Support", "If you ever run into any issues please stop by our [GitHub](https://github.com/ThomasByr/discord-compiler-bot) and we'll give you a hand.", true);
-  embed.footer(|f| f.text("powered by Azure & NVidia // created by ThomasByr"));
+  embed.field("Learning Time!", "If you like reading the manuals of things, read our [wiki](https://github.com/ThomasByr/discord-compiler-bot/wiki/) wiki or if you are confident type `;help` to view all commands.", false);
+  embed.field("Support", "If you ever run into any issues please stop by our [github](https://github.com/ThomasByr/discord-compiler-bot) and we'll give you a hand.", true);
+  embed.footer(|f| {
+    f.text("powered by godbolt.org & wandbox.org // created by Thomas Bouyer (BlckLight#0001)")
+  });
   embed
 }
 

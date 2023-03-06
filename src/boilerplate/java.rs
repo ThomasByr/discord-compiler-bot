@@ -1,6 +1,6 @@
-use crate::boilerplate::generator::BoilerPlateGenerator;
 use std::fmt::Write as _;
 
+use crate::boilerplate::generator::BoilerPlateGenerator;
 use crate::utls::constants::JAVA_MAIN_REGEX;
 
 pub struct JavaGenerator {
@@ -29,11 +29,6 @@ impl BoilerPlateGenerator for JavaGenerator {
         // main_body.push_str(&format!("{}\n", trimmed));
         writeln!(main_body, "{}", trimmed).unwrap();
       }
-    }
-
-    // if they included nothing, we can just manually include everything
-    if !header.contains("import") {
-      header.push_str("import java.util.*;\n");
     }
 
     format!(

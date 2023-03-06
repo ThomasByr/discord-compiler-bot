@@ -15,6 +15,7 @@ use serenity::client::Context;
 use serenity::framework::standard::CommandResult;
 use tokio::sync::MutexGuard;
 
+use crate::commands::compile;
 use std::fmt::Write as _;
 
 pub fn build_menu_items(
@@ -63,9 +64,10 @@ pub fn build_menu_items(
   pages
 }
 
+// Pandas#3**2 on serenity disc, tyty
 pub fn build_reaction(emoji_id: u64, emoji_name: &str) -> ReactionType {
   ReactionType::Custom {
-    animated: false, // todo: Make this configurable
+    animated: false,
     id: EmojiId::from(emoji_id),
     name: Some(String::from(emoji_name)),
   }
@@ -85,7 +87,6 @@ pub async fn handle_edit(
   };
 
   // try to clear reactions
-  // let _ = old.delete_reactions(&ctx).await;
   if let Ok(updated_message) = old.channel_id.message(&ctx.http, old.id.0).await {
     for reaction in &updated_message.reactions {
       if reaction.me {
@@ -101,25 +102,25 @@ pub async fn handle_edit(
       handle_edit_asm(ctx, content, author.clone(), old.clone(), original_message.clone()).await
     {
       let err = embeds::build_fail_embed(&author, &e.to_string());
-      embeds::edit_message_embed(ctx, &mut old, err).await;
+      embeds::edit_message_embed(ctx, &mut old, err, None).await;
     }
   } else if content.starts_with(&format!("{}compile", prefix)) {
     if let Err(e) =
       handle_edit_compile(ctx, content, author.clone(), old.clone(), original_message.clone()).await
     {
       let err = embeds::build_fail_embed(&author, &e.to_string());
-      embeds::edit_message_embed(ctx, &mut old, err).await;
+      embeds::edit_message_embed(ctx, &mut old, err, None).await;
     }
   } else if content.starts_with(&format!("{}cpp", prefix)) {
     if let Err(e) =
       handle_edit_cpp(ctx, content, author.clone(), old.clone(), original_message.clone()).await
     {
       let err = embeds::build_fail_embed(&author, &e.to_string());
-      embeds::edit_message_embed(ctx, &mut old, err).await;
+      embeds::edit_message_embed(ctx, &mut old, err, None).await;
     }
   } else {
     let err = embeds::build_fail_embed(&author, "Invalid command for edit functionality!");
-    embeds::edit_message_embed(ctx, &mut old, err).await;
+    embeds::edit_message_embed(ctx, &mut old, err, None).await;
   }
 }
 
@@ -130,13 +131,13 @@ pub async fn handle_edit_cpp(
   mut old: Message,
   original_msg: Message,
 ) -> CommandResult {
-  let embed =
+  let (embed, details) =
     crate::commands::cpp::handle_request(ctx.clone(), content, author, &original_msg).await?;
 
   let compilation_successful = embed.0.get("color").unwrap() == COLOR_OKAY;
   discordhelpers::send_completion_react(ctx, &old, compilation_successful).await?;
 
-  embeds::edit_message_embed(ctx, &mut old, embed).await;
+  embeds::edit_message_embed(ctx, &mut old, embed, Some(details)).await;
   Ok(())
 }
 
@@ -147,13 +148,13 @@ pub async fn handle_edit_compile(
   mut old: Message,
   original_msg: Message,
 ) -> CommandResult {
-  let embed =
-    crate::commands::compile::handle_request(ctx.clone(), content, author, &original_msg).await?;
+  let (embed, compilation_details) =
+    compile::handle_request(ctx.clone(), content, author, &original_msg).await?;
 
   let compilation_successful = embed.0.get("color").unwrap() == COLOR_OKAY;
   discordhelpers::send_completion_react(ctx, &old, compilation_successful).await?;
 
-  embeds::edit_message_embed(ctx, &mut old, embed).await;
+  embeds::edit_message_embed(ctx, &mut old, embed, Some(compilation_details)).await;
   Ok(())
 }
 
@@ -164,11 +165,11 @@ pub async fn handle_edit_asm(
   mut old: Message,
   original_msg: Message,
 ) -> CommandResult {
-  let emb =
+  let (emb, details) =
     crate::commands::asm::handle_request(ctx.clone(), content, author, &original_msg).await?;
 
   let success = emb.0.get("color").unwrap() == COLOR_OKAY;
-  embeds::edit_message_embed(ctx, &mut old, emb).await;
+  embeds::edit_message_embed(ctx, &mut old, emb, Some(details)).await;
 
   send_completion_react(ctx, &old, success).await?;
   Ok(())
@@ -265,12 +266,11 @@ pub async fn send_global_presence(shard_manager: &MutexGuard<'_, ShardManager>, 
   };
 
   // update shard guild count & presence
-  let final_s = if sum > 1 { "s" } else { "" };
-  let presence_str = format!("{} guild{} | ;help", server_count, final_s);
+  let presence_str = format!("in {} servers | ;invite", server_count);
 
   let runners = shard_manager.runners.lock().await;
   for (_, v) in runners.iter() {
-    v.runner_tx.set_presence(Some(Activity::watching(&presence_str)), OnlineStatus::Online);
+    v.runner_tx.set_presence(Some(Activity::playing(&presence_str)), OnlineStatus::Online);
   }
 }
 

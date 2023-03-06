@@ -59,12 +59,11 @@ pub async fn get_components(
     end_point = parse_stop;
   }
   if let Some(index) = input.find('`') {
+    // if the ` character is found before \n we should use the ` as our parse stop point
     if end_point == 0 || index < end_point {
-      // if the ` character is found before \n we should use the ` as our parse stop point
       end_point = index;
     }
   }
-
   let mut args: Vec<&str> = input[..end_point].split_whitespace().collect();
   // ditch command str (;compile, ;asm)
   args.remove(0);
@@ -144,22 +143,25 @@ pub async fn get_components(
     result.code = code;
   } else if find_code_block(&mut result, input, author).await? {
     // If we find a code block from our executor's message, and it's also a reply
-    // let's assume we found the stdin and what they're quoting is the code.
+    // let's assume we found the stdin and what they're replying to is the code.
     // Anything else probably doesn't make sense.
     if let Some(replied_msg) = reply {
-      result.stdin = result.code;
-      result.code = String::default();
-
       let attachment = get_message_attachment(&replied_msg.attachments).await?;
       if !attachment.0.is_empty() {
         if !result.target.is_empty() {
           result.target = attachment.1;
         }
+        // shift previos code to stdin, we have found code
+        result.stdin = result.code;
+        result.code = String::default();
         result.code = attachment.0;
-      } else if !find_code_block(&mut result, &replied_msg.content, author).await? {
-        return Err(CommandError::from(
-          "Cannot find code to compile assuming your code block is the program's stdin.",
-        ));
+      } else {
+        let mut fake_result = ParserResult::default();
+        if find_code_block(&mut fake_result, &replied_msg.content, author).await? {
+          // we found a code block - lets assume the reply's codeblock is our actual code
+          result.stdin = result.code;
+          result.code = fake_result.code;
+        }
       }
     }
   } else {
@@ -173,10 +175,10 @@ pub async fn get_components(
         }
         result.code = attachment.0;
       }
-      // no reply in the attachment, lets check for a code-block..
+      // no attachment in the reply, lets check for a code-block..
       else if !find_code_block(&mut result, &replied_msg.content, author).await? {
         return Err(CommandError::from(
-                    "You must attach a code-block containing code to your message or quote a message that has one.",
+                    "You must attach a code-block containing code to your message or reply to a message that has one.",
                 ));
       }
     } else {
@@ -309,7 +311,7 @@ pub async fn get_message_attachment(
             Ok((str, extension))
           }
           Err(e) => {
-            Err(CommandError::from(format!("UTF8 Error occurred while parsing file: {}", e)))
+            Err(CommandError::from(format!("UTF8 Error occured while parsing file: {}", e)))
           }
         }
       }

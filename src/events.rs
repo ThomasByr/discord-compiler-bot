@@ -1,5 +1,3 @@
-use std::env;
-
 use serenity::{
   async_trait,
   collector::CollectReaction,
@@ -11,10 +9,12 @@ use serenity::{
   },
   prelude::*,
 };
+use std::env;
 
 use tokio::sync::MutexGuard;
 
 use chrono::{DateTime, Utc};
+use serenity::model::application::component::ButtonStyle;
 
 use crate::{
   cache::*,
@@ -188,8 +188,8 @@ impl EventHandler for Handler {
             .await;
           let _ = new_message.delete_reactions(&ctx.http).await;
           if collector.is_some() {
-            let prefix = env::var("BOT_PREFIX").expect("Expected bot prefix in .env file");
-            let emb = match handle_request(
+            let prefix = env::var("BOT_PREFIX").expect("Bot prefix is not set!");
+            let (emb, details) = match handle_request(
               ctx.clone(),
               format!("{}compile\n```{}\n{}\n```", prefix, language, code),
               new_message.author.clone(),
@@ -197,9 +197,10 @@ impl EventHandler for Handler {
             )
             .await
             {
-              Ok(emb) => emb,
+              Ok((emb, details)) => (emb, details),
               Err(e) => {
                 let emb = embeds::build_fail_embed(&new_message.author, &format!("{}", e));
+
                 let sent_fail =
                   embeds::dispatch_embed(&ctx.http, new_message.channel_id, emb).await;
                 if let Ok(sent) = sent_fail {
@@ -209,7 +210,33 @@ impl EventHandler for Handler {
                 return;
               }
             };
-            let _ = embeds::dispatch_embed(&ctx.http, new_message.channel_id, emb).await;
+
+            // Send our final embed
+            let mut new_msg = embeds::embed_message(emb);
+            let data = ctx.data.read().await;
+            if let Some(link_cache) = data.get::<LinkAPICache>() {
+              if let Some(b64) = details.base64 {
+                let long_url = format!("https://godbolt.org/clientstate/{}", b64);
+                let link_cache_lock = link_cache.read().await;
+                if let Some(url) = link_cache_lock.get_link(long_url).await {
+                  new_msg.components(|cmp| {
+                    cmp.create_action_row(|row| {
+                      row.create_button(|btn| {
+                        btn.style(ButtonStyle::Link).url(url).label("View on godbolt.org")
+                      })
+                    })
+                  });
+                }
+              }
+            }
+
+            let _ = new_message
+              .channel_id
+              .send_message(&ctx.http, |e| {
+                *e = new_msg.clone();
+                e
+              })
+              .await;
           }
         }
       }

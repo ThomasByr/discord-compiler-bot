@@ -30,7 +30,6 @@ use crate::commands::{
   asm::*, block::*, botinfo::*, compile::*, compilers::*, cpp::*, format::*, formats::*, help::*,
   invite::*, languages::*, ping::*, unblock::*,
 };
-
 use crate::utls::discordhelpers::embeds::panic_embed;
 use crate::utls::discordhelpers::manual_dispatch;
 
@@ -108,7 +107,6 @@ async fn main() -> Result<(), Box<dyn Error>> {
     .await?;
 
   cache::fill(client.data.clone(), &prefix, bot_id.0, client.shard_manager.clone()).await?;
-
   if let Ok(plog) = env::var("PANIC_LOG") {
     let default_panic = std::panic::take_hook();
     let http = client.cache_and_http.http.clone();

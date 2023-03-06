@@ -1,3 +1,5 @@
+use std::fmt::Write as _;
+
 use serenity::framework::standard::CommandError;
 use serenity::{
   framework::standard::CommandResult,
@@ -12,8 +14,6 @@ use crate::{
   utls::constants::COLOR_FAIL, utls::constants::COLOR_OKAY, utls::parser::find_code_block,
   utls::parser::ParserResult,
 };
-
-use std::fmt::Write as _;
 
 pub async fn diff(ctx: &Context, msg: &ApplicationCommandInteraction) -> CommandResult {
   let message1 = msg
@@ -103,7 +103,6 @@ pub async fn diff(ctx: &Context, msg: &ApplicationCommandInteraction) -> Command
       })
     })
     .await?;
-
   debug!("Command executed");
   Ok(())
 }

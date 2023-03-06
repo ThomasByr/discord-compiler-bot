@@ -121,15 +121,14 @@ pub async fn format(ctx: &Context, msg: &Message, mut args: Args) -> CommandResu
 
     msg
       .channel_id
-      .send_message(&ctx.http, |msg| msg.add_file(path.as_str()).content("Powered by MS Azure"))
+      .send_message(&ctx.http, |msg| msg.add_file(path.as_str()).content("Powered by godbolt.org"))
       .await?;
     let _ = std::fs::remove_file(&path);
   } else {
     msg
-      .reply(&ctx.http, format!("\n```{}\n{}```\n*Powered by MS Azure*", lang_code, answer))
+      .reply(&ctx.http, format!("\n```{}\n{}```\n*Powered by godbolt.org*", lang_code, answer))
       .await?;
   }
-
   debug!("Command executed");
   Ok(())
 }

@@ -1,6 +1,6 @@
-use crate::boilerplate::generator::BoilerPlateGenerator;
 use std::fmt::Write as _;
 
+use crate::boilerplate::generator::BoilerPlateGenerator;
 use crate::utls::constants::CSHARP_MAIN_REGEX;
 
 pub struct CSharpGenerator {

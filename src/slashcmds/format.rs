@@ -39,7 +39,6 @@ pub async fn format(ctx: &Context, command: &ApplicationCommandInteraction) -> C
       create_formats_interaction(response, &comp_mgr.gbolt.as_ref().unwrap().formats)
     })
     .await?;
-
   // Handle response from select menu / button interactions
   let resp = command.get_interaction_response(&ctx.http).await?;
   let mut cib = resp.await_component_interactions(&ctx.shard).timeout(Duration::from_secs(30));
@@ -156,7 +155,6 @@ pub async fn format(ctx: &Context, command: &ApplicationCommandInteraction) -> C
     })
     .await?;
 
-  debug!("Command executed");
   Ok(())
 }
 

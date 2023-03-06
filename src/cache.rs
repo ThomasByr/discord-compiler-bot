@@ -13,6 +13,7 @@ use serenity::prelude::{TypeMap, TypeMapKey};
 use crate::managers::stats::StatsManager;
 use crate::utls::blocklist::Blocklist;
 
+use crate::apis::quick_link::LinkAPI;
 use crate::managers::command::CommandManager;
 use crate::managers::compilation::CompilationManager;
 use lru_cache::LruCache;
@@ -55,6 +56,12 @@ impl TypeMapKey for BlocklistCache {
 pub struct ShardManagerCache;
 impl TypeMapKey for ShardManagerCache {
   type Value = Arc<Mutex<ShardManager>>;
+}
+
+/// Contains the quick link api - used for godbolt button
+pub struct LinkAPICache;
+impl TypeMapKey for LinkAPICache {
+  type Value = Arc<RwLock<LinkAPI>>;
 }
 
 pub struct MessageCacheEntry {
@@ -119,12 +126,12 @@ pub async fn fill(
   let emoji_identifiers = [
     "SUCCESS_EMOJI_ID",
     "SUCCESS_EMOJI_NAME",
-    "FAIL_EMOJI_ID",
     "FAIL_EMOJI_NAME",
+    "FAIL_EMOJI_ID",
     "LOADING_EMOJI_ID",
     "LOADING_EMOJI_NAME",
-    "LOGO_EMOJI_ID",
     "LOGO_EMOJI_NAME",
+    "LOGO_EMOJI_ID",
   ];
   for id in &emoji_identifiers {
     if let Ok(envvar) = env::var(id) {
@@ -166,6 +173,15 @@ pub async fn fill(
   if let Ok(token) = env::var("DBL_TOKEN") {
     let client = dbl::Client::new(token)?;
     data.insert::<DblCache>(Arc::new(RwLock::new(client)));
+  }
+
+  // DBL
+  if let Ok(redirect_base) = env::var("QUICK_LINK_URL") {
+    if let Ok(request_base) = env::var("QUICK_LINK_POST") {
+      info!("Registered quick link api");
+      let link_man = LinkAPI::new(&request_base, &redirect_base);
+      data.insert::<LinkAPICache>(Arc::new(RwLock::new(link_man)));
+    }
   }
 
   // Stats tracking

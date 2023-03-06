@@ -1,26 +1,55 @@
+use std::fmt::Write as _;
+
 use serenity::{
   client::Context,
   framework::standard::{macros::command, Args, CommandError, CommandResult},
 };
 
-use crate::cache::{CompilerCache, ConfigCache, MessageCache, MessageCacheEntry};
+use crate::cache::{CompilerCache, ConfigCache, LinkAPICache, MessageCache, MessageCacheEntry};
 use crate::utls::constants::*;
 use crate::utls::discordhelpers;
 use crate::utls::discordhelpers::embeds;
 
+use crate::managers::compilation::CompilationDetails;
 use serenity::builder::CreateEmbed;
+use serenity::model::application::component::ButtonStyle;
 use serenity::model::channel::{Message, ReactionType};
 use serenity::model::user::User;
-
-use std::fmt::Write as _;
 
 use crate::utls::parser;
 
 #[command]
 #[bucket = "nospam"]
 pub async fn asm(ctx: &Context, msg: &Message, _args: Args) -> CommandResult {
-  let emb = handle_request(ctx.clone(), msg.content.clone(), msg.author.clone(), msg).await?;
-  let asm_embed = embeds::dispatch_embed(&ctx.http, msg.channel_id, emb).await?;
+  let (embed, compilation_details) =
+    handle_request(ctx.clone(), msg.content.clone(), msg.author.clone(), msg).await?;
+
+  // Send our final embed
+  let mut new_msg = embeds::embed_message(embed);
+  let data = ctx.data.read().await;
+  if let Some(link_cache) = data.get::<LinkAPICache>() {
+    if let Some(b64) = compilation_details.base64 {
+      let long_url = format!("https://godbolt.org/clientstate/{}", b64);
+      let link_cache_lock = link_cache.read().await;
+      if let Some(url) = link_cache_lock.get_link(long_url).await {
+        new_msg.components(|cmp| {
+          cmp.create_action_row(|row| {
+            row.create_button(|btn| {
+              btn.style(ButtonStyle::Link).url(url).label("View on godbolt.org")
+            })
+          })
+        });
+      }
+    }
+  }
+
+  let asm_embed = msg
+    .channel_id
+    .send_message(&ctx.http, |e| {
+      *e = new_msg.clone();
+      e
+    })
+    .await?;
 
   // Success/fail react
   let compilation_successful = asm_embed.embeds[0].colour.unwrap().0 == COLOR_OKAY;
@@ -38,7 +67,7 @@ pub async fn handle_request(
   mut content: String,
   author: User,
   msg: &Message,
-) -> Result<CreateEmbed, CommandError> {
+) -> Result<(CreateEmbed, CompilationDetails), CommandError> {
   let data_read = ctx.data.read().await;
   let loading_reaction = {
     let botinfo_lock = data_read.get::<ConfigCache>().unwrap();
@@ -73,7 +102,7 @@ pub async fn handle_request(
   // send out loading emote
   if msg.react(&ctx.http, loading_reaction.clone()).await.is_err() {
     return Err(CommandError::from(
-      "Unable to react to message, am I missing permissions to react or use external emoji?\n{}",
+      "Unable to react to message, am I missing permissions to react or use external emoji?",
     ));
   }
 
@@ -82,12 +111,12 @@ pub async fn handle_request(
     Ok(resp) => resp,
     Err(e) => {
       discordhelpers::delete_bot_reacts(&ctx, msg, loading_reaction).await?;
-      return Err(CommandError::from(format!("Azure request failed!\n\n{}", e)));
+      return Err(CommandError::from(format!("Godbolt request failed!\n\n{}", e)));
     }
   };
 
   // remove our loading emote
   discordhelpers::delete_bot_reacts(&ctx, msg, loading_reaction).await?;
 
-  Ok(response.1)
+  Ok((response.1, response.0))
 }

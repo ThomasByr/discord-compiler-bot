@@ -1,6 +1,6 @@
-use crate::boilerplate::generator::BoilerPlateGenerator;
 use std::fmt::Write as _;
 
+use crate::boilerplate::generator::BoilerPlateGenerator;
 use crate::utls::constants::C_LIKE_MAIN_REGEX;
 
 pub struct CGenerator {
@@ -31,29 +31,9 @@ impl BoilerPlateGenerator for CGenerator {
       }
     }
 
-    if (main_body.contains("printf") || main_body.contains("scanf")) && !header.contains("stdio.h")
-    {
-      header.push_str("#include <stdio.h>\n");
+    if main_body.contains("printf") && !header.contains("stdio.h") {
+      header.push_str("#include <stdio.h>\n")
     }
-    if (main_body.contains("malloc")
-      || main_body.contains("free")
-      || main_body.contains("realloc")
-      || main_body.contains("calloc")
-      || main_body.contains("EXIT_FAILURE")
-      || main_body.contains("EXIT_SUCCESS"))
-      && !header.contains("stdlib.h")
-    {
-      header.push_str("#include <stdlib.h>");
-    }
-    if (main_body.contains("strlen") || main_body.contains("strcmp"))
-      && !header.contains("string.h")
-    {
-      header.push_str("#include <string.h>\n");
-    }
-    if (main_body.contains("time") || main_body.contains("ctime")) && !header.contains("time.h") {
-      header.push_str("#include <time.h>\n");
-    }
-
     format!("{}\nint main(void) {{\n{}return 0;\n}}", header, main_body)
   }
 

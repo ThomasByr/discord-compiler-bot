@@ -1,3 +1,5 @@
+use std::fmt::Write as _;
+
 use crate::cache::{CompilerCache, ConfigCache};
 use serenity::builder::CreateEmbed;
 use serenity::framework::standard::{macros::command, Args, CommandError, CommandResult};
@@ -6,8 +8,6 @@ use serenity::prelude::*;
 
 use crate::utls::constants::{COLOR_OKAY, ICON_HELP};
 use crate::utls::discordhelpers::embeds;
-
-use std::fmt::Write as _;
 
 #[command]
 pub async fn formats(ctx: &Context, msg: &Message, _args: Args) -> CommandResult {
@@ -34,8 +34,7 @@ pub async fn formats(ctx: &Context, msg: &Message, _args: Args) -> CommandResult
     let mut output = String::new();
     output.push_str("Styles:\n");
     if format.styles.is_empty() {
-      // output.push_str("    *(None)*\n");
-      writeln!(output, "    *(None)*").unwrap();
+      output.push_str("    *(None)*\n");
     }
     for style in &format.styles {
       // output.push_str(&format!("    *- {}*\n", style));
@@ -45,7 +44,6 @@ pub async fn formats(ctx: &Context, msg: &Message, _args: Args) -> CommandResult
   }
 
   embeds::dispatch_embed(&ctx.http, msg.channel_id, emb).await?;
-
   debug!("Command executed");
   return Ok(());
 }
