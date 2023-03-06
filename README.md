@@ -170,6 +170,8 @@ Please read the [changelog](changelog.md) file for the full history !
 - added `.rustfmt.toml` to enforce a consistent style
 - updated dependencies (notably serenity to `0.11.5`)
 - finally unified embed dispatching
+- went back to dispatching embeds manually for `;asm` and `;compile` commands
+- upgraded godbolt
 
 </details>
 
