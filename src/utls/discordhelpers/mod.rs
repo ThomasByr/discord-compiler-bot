@@ -266,11 +266,11 @@ pub async fn send_global_presence(shard_manager: &MutexGuard<'_, ShardManager>, 
   };
 
   // update shard guild count & presence
-  let presence_str = format!("in {} servers | ;invite", server_count);
+  let presence_str = format!("{} guilds | ;help ({})", server_count, env!("CARGO_PKG_VERSION"));
 
   let runners = shard_manager.runners.lock().await;
   for (_, v) in runners.iter() {
-    v.runner_tx.set_presence(Some(Activity::playing(&presence_str)), OnlineStatus::Online);
+    v.runner_tx.set_presence(Some(Activity::watching(&presence_str)), OnlineStatus::Online);
   }
 }
 
