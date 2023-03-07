@@ -121,13 +121,19 @@ pub async fn handle_request(
   let _ = discordhelpers::delete_bot_reacts(&ctx, msg, loading_reaction).await;
 
   let is_success = is_success_embed(&result.1);
+  {
+    // stats manager is used in events.rs, lets keep our locks very short
+    let stats = data_read.get::<StatsManagerCache>().unwrap().lock().await;
+    if stats.should_track() {
+      stats.compilation(&result.0.language, !is_success).await;
+    }
+  }
   let stats = data_read.get::<StatsManagerCache>().unwrap().lock().await;
   if stats.should_track() {
     stats.compilation(&result.0.language, !is_success).await;
   }
 
-  let data = ctx.data.read().await;
-  let config = data.get::<ConfigCache>().unwrap();
+  let config = data_read.get::<ConfigCache>().unwrap();
   let config_lock = config.read().await;
 
   if let Some(log) = config_lock.get("COMPILE_LOG") {
