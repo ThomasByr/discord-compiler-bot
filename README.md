@@ -48,8 +48,9 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 5. [🧪 Testing](#-testing)
 6. [🧑‍🏫 Contributing](#-contributing)
 7. [⚖️ License](#️-license)
-8. [🔄 Changelog](#-changelog)
-9. [🐛 Bugs and TODO](#-bugs-and-todo)
+8. [🖼️ Icons](#️-icons)
+9. [🔄 Changelog](#-changelog)
+10. [🐛 Bugs and TODO](#-bugs-and-todo)
 
 ## ✏️ In short
 
@@ -132,6 +133,10 @@ This project is licensed under the AGPL-3.0 new or revised license. Please read 
 
 THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
+## 🖼️ Icons
+
+Icons (except [the logo](assets/code.png)) are made by [Freepik](https://www.flaticon.com/authors/freepik) and [pixelmeetup](https://www.flaticon.com/authors/pixelmeetup) from [www.flaticon.com](https://www.flaticon.com/).
+
 ## 🔄 Changelog
 
 Please read the [changelog](changelog.md) file for the full history !
@@ -172,6 +177,7 @@ Please read the [changelog](changelog.md) file for the full history !
 - finally unified embed dispatching
 - went back to dispatching embeds manually for `;asm` and `;compile` commands
 - upgraded godbolt
+- restored proper order of operation when loading shards
 
 </details>
 
@@ -189,4 +195,4 @@ Please read the [changelog](changelog.md) file for the full history !
 - ~~`;botinfo` command not working~~ (v0.1.0)
 - ~~total number of servers joined always showing 0~~ (v0.1.1)
 - ~~debug commands not showing up in console (might be linked to previous bug)~~ (v0.1.1)
-- some shards are randomly disconnecting
+- ~~some shards are randomly disconnecting~~ (v1.4.2)
