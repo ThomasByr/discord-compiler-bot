@@ -83,3 +83,4 @@
 - finally unified embed dispatching
 - went back to dispatching embeds manually for `;asm` and `;compile` commands
 - upgraded godbolt
+- restored proper order of operation when loading shards
