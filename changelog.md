@@ -47,3 +47,40 @@
 - if api don't return status, assume we failed
 - throw more compilation info in footer
 - cared about performance for once
+
+## First stable release version
+
+**v1.0** unwrapping
+
+- strongest cargo clippy analysis
+- fixed some `panic!` on `.unwrap()`
+- support for custom fail emoji
+- the bot now uses 75B less ram on average, yay
+
+**v1.1** swaps
+
+- rewrote [CONTRIBUTING.md](.github/CONTRIBUTING.md)
+- rules for background runner > .log
+- TypeScript fix & shorthand `ts`
+- `panic!` hook : prevent invalid panic logs from obfuscating errors
+- rolled back to a lower output length limit
+
+**v1.2** what is more useful when is broken ?
+
+- reworked C and Java boilerplates
+- check for existence of builds
+- added `bash` and `sh` aliases for `bash script`
+
+**v1.3** more languages
+
+- added `c#` and `cs` aliases for `csharp`
+- ... and many more
+
+**v1.4** dependencies
+
+- added `.rustfmt.toml` to enforce a consistent style
+- updated dependencies (notably serenity to `0.11.5`)
+- finally unified embed dispatching
+- went back to dispatching embeds manually for `;asm` and `;compile` commands
+- upgraded godbolt
+- restored proper order of operation when loading shards

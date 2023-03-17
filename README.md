@@ -1,4 +1,4 @@
-# <img src="assets/code.png" alt="icon" width="3%"/> Discord compiler bot
+# <img src="assets/code.png" alt="icon" width="4%"/> Discord Compiler Bot
 
 [![Linux](https://svgshare.com/i/Zhy.svg)](https://docs.microsoft.com/en-us/windows/wsl/tutorials/gui-apps)
 [![Windows](https://svgshare.com/i/ZhY.svg)](https://svgshare.com/i/ZhY.svg)
@@ -14,23 +14,29 @@
 [![Author](https://img.shields.io/badge/author-@ThomasByr-blue)](https://github.com/ThomasByr)
 
 ````txt
-;compile c++ -O3 -Wall -Wextra -Werror -Wpedantic
+;compile rust
 argv1 argv2 argv3
 ```
-stdin1 on the first line
-stdin2 on the second line
+stdin1
+stdin2
+stdin3
 ```
-```cpp
-#include <iostream>
-#include <string>
+```rs
+fn main() -> Result<(), Box<dyn std::error::Error>> {
+    let args: Vec<String> = std::env::args().collect();
 
-int main(int argc, char** argv) {
-    (void)argc;
-    std::string str;
-    std::getline(std::cin, str);
-    std::cout << str << "\n"
-              << argv[1] << std::endl;
-    return EXIT_SUCCESS;
+    let query = &args.get(1).expect("command line argument missing");
+
+    let mut input = String::new();
+    std::io::stdin().read_line(&mut input)?;
+    let input = input.trim();
+
+    println!(
+        "first command line argument: {}\nfirst input line: {}",
+        query, input
+    );
+
+    Ok(())
 }
 ```
 ````
@@ -39,14 +45,17 @@ int main(int argc, char** argv) {
 2. [👩‍🏫 Usage](#-usage)
 3. [💁 Get Help](#-get-help)
 4. [🔰 Support](#-support)
-5. [⚖️ License](#️-license)
-6. [🔄 Changelog and contributing](#-changelog-and-contributing)
-7. [🐛 Bugs and TODO](#-bugs-and-todo)
+5. [🧪 Testing](#-testing)
+6. [🧑‍🏫 Contributing](#-contributing)
+7. [⚖️ License](#️-license)
+8. [🖼️ Icons](#️-icons)
+9. [🔄 Changelog](#-changelog)
+10. [🐛 Bugs and TODO](#-bugs-and-todo)
 
 ## ✏️ In short
 
 > **Note**
-> This project was done in a week so do not expect crazy behavior and be immune to bugs.
+> This project was initially done in a week so do not expect crazy behavior and be immune to bugs.
 
 This is a Discord compiler bot which can compile / interpret code blocks and display the result. Keep in mind that we're working in discord. This means, of course, that we have many operating restraints. Here's a few of the big ones.
 
@@ -83,9 +92,38 @@ On a side note, support has been added for ARM architectures. Meaning you can no
 
 > [Create a new issue](https://github.com/ThomasByr/discord-compiler-bot/issues/new)
 
+## 🧪 Testing
+
+Oh god... please don't.
+
+Still, make sure you have `valgrind` up and ready and then run :
+
+```bash
+cargo test --all
+```
+
+## 🧑‍🏫 Contributing
+
+If you ever want to contribute, either request the contributor status, or, more manually, fork the repo and make a full request !. On a more generic note, please do respect the [Rust Coding Conventions](https://rustc-dev-guide.rust-lang.org/conventions.html) and wait for your PR to be reviewed. Make sure you respect and read the [Contributing Guidelines](.github/CONTRIBUTING.md), make pull requests and be kind.
+
+> The standard procedure is :
+>
+> ```txt
+> fork -> git branch -> push -> pull request
+> ```
+>
+> Note that we won't accept any PR :
+>
+> - that does not follow our Contributing Guidelines
+> - that is not sufficiently commented or isn't well formated
+> - without any proper test suite
+> - with a failing or incomplete test suite
+
+Happy coding ! 🙂
+
 ## ⚖️ License
 
-This project is licensed under the GPL-3.0 new or revised license. Please read the [LICENSE](LICENSE) file.
+This project is licensed under the AGPL-3.0 new or revised license. Please read the [LICENSE](LICENSE) file.
 
 - Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
 
@@ -95,58 +133,51 @@ This project is licensed under the GPL-3.0 new or revised license. Please read t
 
 THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-## 🔄 Changelog and contributing
+## 🖼️ Icons
+
+Icons (except [the logo](assets/code.png)) are made by [Freepik](https://www.flaticon.com/authors/freepik) and [pixelmeetup](https://www.flaticon.com/authors/pixelmeetup) from [www.flaticon.com](https://www.flaticon.com/).
+
+## 🔄 Changelog
 
 Please read the [changelog](changelog.md) file for the full history !
 
-If you ever want to contribute to this project, either request the contributor status, or, more manually, fork the repo and make a full request ! On a more generic note, please do respect the [Rust Coding Conventions](https://rustc-dev-guide.rust-lang.org/conventions.html) and wait for your PR to be reviewed. Make sure you respect and read the [contributing](.github/CONTRIBUTING.md) guideline, make pull requests and be kind.
-
 <details>
-    <summary>  Beta first minor release (click here to expand) </summary>
+    <summary>  First stable release version (click here to expand) </summary>
 
-**v0.1.0** first release
+**v1.0** unwrapping
 
-- support for 30 more languages
-- asm output
-- embedded messages for discord
-- `;invite`, `;botinfo` commands
-- icons are now found online
+- strongest cargo clippy analysis
+- fixed some `panic!` on `.unwrap()`
+- support for custom fail emoji
+- the bot now uses 75B less ram on average, yay
 
-**v0.1.1** first patch
+**v1.1** swaps
 
-- locked serenity dependency version to v0.11
-- client now has privileged access to context
-- fix argument endpoint detection on replies
+- rewrote [CONTRIBUTING.md](.github/CONTRIBUTING.md)
+- rules for background runner > .log
+- TypeScript fix & shorthand `ts`
+- `panic!` hook : prevent invalid panic logs from obfuscating errors
+- rolled back to a lower output length limit
 
-**v0.1.2** code cleaning and slash commands
+**v1.2** what is more useful when is broken ?
 
-- integration of some easy slash commands
-- app commands to compile, format and make assembly
-- cargo clippy to help keep the code cleaner
-- deactivated local execution for some guilds
-- `;block` and `;unblock` commands working (blacklist)
-- added boilerplate code for some languages
+- reworked C and Java boilerplates
+- check for existence of builds
+- added `bash` and `sh` aliases for `bash script`
 
-**v0.1.3** local rights and corrections
+**v1.3** more languages
 
-- patched boilerplate code gen for java
-- c detached from c++ boilerplate
-- created alternate server count
-- new `diff` slash command with colored output
-- boilerplate code for php
-- pinned serenity dependency to 0.11.1 to avoid headaches
+- added `c#` and `cs` aliases for `csharp`
+- ... and many more
 
-**v0.1.4** hotfix
+**v1.4** dependencies
 
-- compilation service unavailable
-
-**v0.1.5** online services
-
-- assume some service won't work
-- unwrap leading to panic
-- if api don't return status, assume we failed
-- throw more compilation info in footer
-- cared about performance for once
+- added `.rustfmt.toml` to enforce a consistent style
+- updated dependencies (notably serenity to `0.11.5`)
+- finally unified embed dispatching
+- went back to dispatching embeds manually for `;asm` and `;compile` commands
+- upgraded godbolt
+- restored proper order of operation when loading shards
 
 </details>
 
@@ -164,3 +195,4 @@ If you ever want to contribute to this project, either request the contributor s
 - ~~`;botinfo` command not working~~ (v0.1.0)
 - ~~total number of servers joined always showing 0~~ (v0.1.1)
 - ~~debug commands not showing up in console (might be linked to previous bug)~~ (v0.1.1)
+- ~~some shards are randomly disconnecting~~ (v1.4.2)

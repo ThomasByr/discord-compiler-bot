@@ -1,5 +1,5 @@
 [hooks]
-pre-commit = "cargo fmt -- --check && cargo clippy --all-targets --all-features -- -D clippy::all && cargo test"
+pre-commit = "cargo fmt --all --check && cargo clippy --all-targets --all-features -- -D clippy::all && cargo test --all"
 
 [logging]
 verbose = true 
