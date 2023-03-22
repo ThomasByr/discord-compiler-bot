@@ -179,6 +179,10 @@ Please read the [changelog](changelog.md) file for the full history !
 - upgraded godbolt
 - restored proper order of operation when loading shards
 
+**v1.5** bench
+
+- ensured regular expressions are compiled statically
+
 </details>
 
 ## 🐛 Bugs and TODO
