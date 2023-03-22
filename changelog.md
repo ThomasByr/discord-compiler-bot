@@ -84,3 +84,7 @@
 - went back to dispatching embeds manually for `;asm` and `;compile` commands
 - upgraded godbolt
 - restored proper order of operation when loading shards
+
+**v1.5** bench
+
+- ensured regular expressions are compiled statically
