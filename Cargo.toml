@@ -6,6 +6,10 @@ authors     = ["ThomasByr"]
 edition     = "2021"
 build       = "src/build.rs"
 
+[profile.production]
+inherits = "release"
+debug = true
+
 [dev-dependencies]
 rusty-hook = "0.11"
 
