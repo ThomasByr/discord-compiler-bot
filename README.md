@@ -96,7 +96,7 @@ On a side note, support has been added for ARM architectures. Meaning you can no
 
 Oh god... please don't.
 
-Still, make sure you have `valgrind` up and ready and then run :
+Still, make sure you have `cargo` up and ready and then run :
 
 ```bash
 cargo test --all
