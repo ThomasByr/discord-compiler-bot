@@ -147,7 +147,7 @@ pub async fn format(ctx: &Context, command: &ApplicationCommandInteraction) -> C
         .allowed_mentions(|mentions| mentions.replied_user(false))
         .reference_message(msg.unwrap())
         .content(format!(
-          "```{}\n{}\n```Requested by: {}",
+          "```{}\n{}\n```Requested by: {}\n*Powered by godbolt.org*",
           if parse_result.target.is_empty() { "" } else { &parse_result.target },
           result.answer,
           command.user.tag()
