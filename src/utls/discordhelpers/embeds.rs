@@ -322,7 +322,7 @@ pub fn build_welcome_embed() -> CreateEmbed {
   embed.field("Learning Time!", "If you like reading the manuals of things, read our [wiki](https://github.com/ThomasByr/discord-compiler-bot/wiki/) wiki or if you are confident type `;help` to view all commands.", false);
   embed.field("Support", "If you ever run into any issues please stop by our [github](https://github.com/ThomasByr/discord-compiler-bot) and we'll give you a hand.", true);
   embed.footer(|f| {
-    f.text("powered by godbolt.org & wandbox.org // created by Thomas Bouyer (BlckLight#0001)")
+    f.text("powered by godbolt.org & wandbox.org // created by Thomas Bouyer (blcklight#0)")
   });
   embed
 }
