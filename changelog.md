@@ -88,3 +88,4 @@
 **v1.5** bench
 
 - ensured regular expressions are compiled statically
+- minor bump to serenity `0.11.6` and use of unstable features (forum threads)
