@@ -60,9 +60,11 @@ impl Wandbox {
 
     // adjust language names to lower
     for (_k, v) in cache.iter_mut() {
-      for mut c in v.compilers.iter_mut() {
-        c.language = c.language.to_ascii_lowercase();
-      }
+      // for mut c in v.compilers.iter_mut() {
+      //   c.language = c.language.to_ascii_lowercase();
+      // }
+      // same thing but with iterators
+      v.compilers.iter_mut().for_each(|c| c.language = c.language.to_ascii_lowercase());
     }
 
     Ok(Wandbox { cache: Arc::new(RwLock::new(cache)) })
