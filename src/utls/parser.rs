@@ -137,55 +137,50 @@ pub async fn get_components(
   }
   result.args = shell_words::split(&cmdline_args)?;
 
-  if !result.url.is_empty() {
-    let code = get_url_code(&result.url, author).await?;
-    result.code = code;
-  } else if find_code_block(&mut result, input, author).await? {
+  if find_code_block(&mut result, input, author).await? {
+    if !result.url.is_empty() {
+      let code = get_url_code(&result.url, author).await?;
+      result.stdin = result.code;
+      result.code = code;
+    }
+
     // If we find a code block from our executor's message, and it's also a reply
     // let's assume we found the stdin and what they're replying to is the code.
     // Anything else probably doesn't make sense.
     if let Some(replied_msg) = reply {
-      let attachment = get_message_attachment(&replied_msg.attachments).await?;
-      if !attachment.0.is_empty() {
-        if !result.target.is_empty() {
-          result.target = attachment.1;
-        }
-        // shift previos code to stdin, we have found code
+      let mut fake_result = ParserResult::default();
+      if find_code_block(&mut fake_result, &replied_msg.content, author).await? {
+        // we found a code block - lets assume the reply's codeblock is our actual code
         result.stdin = result.code;
-        result.code = String::default();
-        result.code = attachment.0;
-      } else {
-        let mut fake_result = ParserResult::default();
-        if find_code_block(&mut fake_result, &replied_msg.content, author).await? {
-          // we found a code block - lets assume the reply's codeblock is our actual code
-          result.stdin = result.code;
-          result.code = fake_result.code;
-        }
+        result.code = fake_result.code;
+        result.target = fake_result.target
       }
+    }
+  } else if !result.url.is_empty() {
+    let code = get_url_code(&result.url, author).await?;
+    result.code = code;
+  }
+  // Unable to parse a code block from our executor's message, lets see if we have a
+  // reply to grab some code from.
+  else if let Some(replied_msg) = reply {
+    let attachment = get_message_attachment(&replied_msg.attachments).await?;
+    if !attachment.0.is_empty() {
+      if !result.target.is_empty() {
+        result.target = attachment.1;
+      }
+      result.code = attachment.0;
+    }
+    // no attachment in the reply, lets check for a code-block..
+    else if !find_code_block(&mut result, &replied_msg.content, author).await? {
+      return Err(CommandError::from(
+            "You must attach a code-block containing code to your message or reply to a message that has one.",
+        ));
     }
   } else {
-    // Unable to parse a code block from our executor's message, lets see if we have a
-    // reply to grab some code from.
-    if let Some(replied_msg) = reply {
-      let attachment = get_message_attachment(&replied_msg.attachments).await?;
-      if !attachment.0.is_empty() {
-        if !result.target.is_empty() {
-          result.target = attachment.1;
-        }
-        result.code = attachment.0;
-      }
-      // no attachment in the reply, lets check for a code-block..
-      else if !find_code_block(&mut result, &replied_msg.content, author).await? {
-        return Err(CommandError::from(
-                    "You must attach a code-block containing code to your message or reply to a message that has one.",
-                ));
-      }
-    } else {
-      // We were really given nothing, lets fail now.
-      return Err(CommandError::from(
-                "You must attach a code-block containing code to your message or quote a message that has one.",
-            ));
-    }
+    // We were really given nothing, lets fail now.
+    return Err(CommandError::from(
+        "You must attach a code-block containing code to your message or quote a message that has one.",
+    ));
   }
 
   if result.target.is_empty() {
@@ -287,9 +282,12 @@ pub async fn get_message_attachment(
       return Ok((String::new(), String::new()));
     }
     let attached = attachment.unwrap();
-    if attached.size > 512 * 1024 {
-      // 512 KiB seems enough
-      return Err(CommandError::from(format!("Uploaded file too large: `{} MiB`", attached.size)));
+    if attached.size > 512 * 1000 {
+      // 512 KB seems enough
+      return Err(CommandError::from(format!(
+        "Uploaded file too large: `{} KB`",
+        attached.size / 1000
+      )));
     }
     return match reqwest::get(&attached.url).await {
       Ok(r) => {
