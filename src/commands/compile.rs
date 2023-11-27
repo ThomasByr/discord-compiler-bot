@@ -92,9 +92,14 @@ pub async fn handle_request(
 
   // parse user input
   let compilation_manager = data_read.get::<CompilerCache>().unwrap();
-  let parse_result =
-    parser::get_components(&content, &author, Some(compilation_manager), &msg.referenced_message)
-      .await?;
+  let parse_result = parser::get_components(
+    &content,
+    &author,
+    Some(compilation_manager),
+    &msg.referenced_message,
+    false,
+  )
+  .await?;
 
   // send out loading emote
   if msg.react(&ctx.http, loading_reaction.clone()).await.is_err() {

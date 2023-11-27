@@ -85,19 +85,25 @@ pub async fn handle_request(
   let (code, ext) = parser::get_message_attachment(&msg.attachments).await?;
   if !code.is_empty() {
     // content.push_str(&format!("\n```{}\n{}\n```\n", ext, code));
-    writeln!(content, "\n```{}\n{}\n```", ext, code).unwrap();
+    writeln!(content, "\n```{}\n{}\n```\n", ext, code).unwrap();
   }
 
   // parse user input
   let comp_mngr = data_read.get::<CompilerCache>().unwrap();
-  let result =
-    match parser::get_components(&content, &author, Some(comp_mngr), &msg.referenced_message).await
-    {
-      Ok(r) => r,
-      Err(e) => {
-        return Err(CommandError::from(format!("{}", e)));
-      }
-    };
+  let result = match parser::get_components(
+    &content,
+    &author,
+    Some(comp_mngr),
+    &msg.referenced_message,
+    false,
+  )
+  .await
+  {
+    Ok(r) => r,
+    Err(e) => {
+      return Err(CommandError::from(format!("{}", e)));
+    }
+  };
 
   // send out loading emote
   if msg.react(&ctx.http, loading_reaction.clone()).await.is_err() {

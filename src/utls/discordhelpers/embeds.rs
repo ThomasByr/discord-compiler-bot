@@ -9,6 +9,7 @@ use serenity::{
   model::prelude::*,
 };
 
+use crate::apis::insights::InsightsResponse;
 use crate::cache::LinkAPICache;
 use crate::managers::compilation::CompilationDetails;
 use wandbox::*;
@@ -264,6 +265,23 @@ pub fn build_small_compilation_embed(author: &User, res: &mut CompilationResult)
   embed
 }
 
+pub fn build_insights_response_embed(author: &User, res: InsightsResponse) -> CreateEmbed {
+  let mut embed = CreateEmbed::default();
+
+  let error = res.return_code != 0;
+  if !error {
+    embed.color(COLOR_OKAY);
+  } else {
+    embed.color(COLOR_FAIL);
+  }
+
+  embed.description(format!("```cpp\n{}```", if error { res.stderr } else { res.stdout }));
+
+  embed.footer(|f| f.text(format!("Requested by: {} | Powered by cppinsights.io", author.tag())));
+
+  embed
+}
+
 pub fn embed_message(emb: CreateEmbed) -> CreateMessage<'static> {
   let mut msg = CreateMessage::default();
   msg.embed(|e| {
@@ -319,10 +337,10 @@ pub fn build_welcome_embed() -> CreateEmbed {
     format!("{}compile python\n```py\nprint('hello world')\n```", prefix),
     true,
   );
-  embed.field("Learning Time!", "If you like reading the manuals of things, read our [wiki](https://github.com/ThomasByr/discord-compiler-bot/wiki/) wiki or if you are confident type `;help` to view all commands.", false);
-  embed.field("Support", "If you ever run into any issues please stop by our [github](https://github.com/ThomasByr/discord-compiler-bot) and we'll give you a hand.", true);
+  embed.field("Learning Time!", "If you like reading the manuals of things, read our [getting started](https://github.com/Headline/discord-compiler-bot/wiki/Getting-Started) wiki or if you are confident type `;help` to view all commands.", false);
+  embed.field("Support", "If you ever run into any issues please stop by our [support server](https://discord.com/invite/nNNEZ6s) and we'll give you a hand.", true);
   embed.footer(|f| {
-    f.text("powered by godbolt.org & wandbox.org // created by Thomas Bouyer (blcklight#0)")
+    f.text("powered by godbolt.org & wandbox.org // created by Michael Flaherty (Headline#9999)")
   });
   embed
 }
