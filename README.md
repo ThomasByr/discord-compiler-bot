@@ -1,7 +1,5 @@
 # <img src="assets/code.png" alt="icon" width="4%"/> Discord Compiler Bot
 
-[![Linux](https://svgshare.com/i/Zhy.svg)](https://docs.microsoft.com/en-us/windows/wsl/tutorials/gui-apps)
-[![Windows](https://svgshare.com/i/ZhY.svg)](https://svgshare.com/i/ZhY.svg)
 [![GitHub license](https://img.shields.io/github/license/ThomasByr/discord-compiler-bot)](https://github.com/ThomasByr/discord-compiler-bot/blob/master/LICENSE)
 [![GitHub commits](https://badgen.net/github/commits/ThomasByr/discord-compiler-bot)](https://GitHub.com/ThomasByr/discord-compiler-bot/commit/)
 [![GitHub latest commit](https://badgen.net/github/last-commit/ThomasByr/discord-compiler-bot)](https://gitHub.com/ThomasByr/discord-compiler-bot/commit/)
